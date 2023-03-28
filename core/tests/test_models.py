@@ -3,6 +3,8 @@ Tests for model
 """
 from unittest.mock import patch
 
+from decimal import Decimal
+
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
@@ -55,3 +57,26 @@ class ModelTests(TestCase):
         )
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_active)
+
+    def test_create_category_success(self):
+        """Test Crating a category."""
+        category = models.Category.objects.create(
+            name='Electronic',
+        )
+
+        self.assertTrue(str(category), category.name)
+
+    def test_create_product_success(self):
+        """Test creating Product is successfull."""
+        category = models.Category.objects.create(
+            name='Electronic',
+        )
+        product = models.Product.objects.create(
+            name='Hp Elitebook 840 G1',
+            price=Decimal('500.50'),
+            category=category,
+            description='Intel core i5 4th gen, 8gb Ram.'
+        )
+
+        self.assertEqual(str(product), product.name)
+        self.assertEqual(category.id, product.category.id)
