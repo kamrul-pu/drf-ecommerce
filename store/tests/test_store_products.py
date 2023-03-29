@@ -52,7 +52,7 @@ def create_product(**params):
     defaults = {
         'name': 'Hp Elitebook 840 G1',
         'price': Decimal('500.50'),
-        'category': c1,
+        'category_id': c1.id,
         'description': 'Intel core i5 4th gen, 8gb Ram.'
     }
 
@@ -111,7 +111,7 @@ class PublicProductAPITest(TestCase):
         p2 = create_product(
             name='MackbookPro M1',
             price='2000.50',
-            category=c2,
+            category_id=c2.id,
             description='Powerfull Mackbook Pro with Apple M1 powered chipsets.'
         )
 
@@ -126,8 +126,8 @@ class PublicProductAPITest(TestCase):
         print('s1 data', s1.data)
         print('s2 data', s2.data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # self.assertIn(s2.data, res.data)
-        # self.assertNotIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s1.data, res.data)
 
     def test_retrieve_individual_product(self):
         """Test retriving asingle product by id."""
@@ -190,14 +190,15 @@ class PrivateProductAPITests(TestCase):
             payload = {
                 'name': 'Hp Elitebook 840 G1',
                 'price': Decimal('500.50'),
-                'category': c1.id,
+                'category_id': c1.id,
                 'description': 'Intel core i5 4th gen, 8gb Ram.',
                 'image': image_file
             }
+            print('payload', payload)
 
             res = self.client.post(
                 PRODUCT_CREATE_URL, payload, format='multipart')
-        # print("test Res=", res.data)
+            print("test Res=", res.data)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 

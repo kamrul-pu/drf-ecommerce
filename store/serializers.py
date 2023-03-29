@@ -46,8 +46,10 @@ from core.models import (
 
 
 class ProductSerializer(serializers.Serializer):
-    category = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all())
+    # category = serializers.PrimaryKeyRelatedField(
+    #     queryset=Category.objects.all())
+    category_id = serializers.IntegerField()
+
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100)
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -55,8 +57,9 @@ class ProductSerializer(serializers.Serializer):
     image = serializers.ImageField(required=False)
 
     def create(self, validated_data):
+        print("Validated Data ", validated_data)
         product = Product.objects.create(
-            category=validated_data['category'],
+            category_id=validated_data['category_id'],
             name=validated_data['name'],
             price=validated_data['price'],
             description=validated_data.get('description', ''),
@@ -79,7 +82,7 @@ class CategorySerializer(serializers.Serializer):
     """Serializer for Category."""
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100)
-    products = ProductSerializer(many=True)
+    # products = ProductSerializer(many=True, read_only=True)
 
     def create(self, validated_data):
         category = Category.objects.create(**validated_data)
