@@ -14,10 +14,72 @@ from core.models import (
 #         model = Product
 #         fields = ['id', 'name', 'price', 'category', 'image']
 
+
+# class ProductSerializer(serializers.Serializer):
+#     # category = CategorySerializer()
+#     id = serializers.IntegerField(read_only=True)
+#     category_id = serializers.IntegerField()
+#     name = serializers.CharField()
+#     price = serializers.DecimalField(max_digits=10, decimal_places=2)
+#     image = serializers.ImageField(required=False)
+#     description = serializers.TimeField()
+
+#     def create(self, validated_data):
+#         """Create and return Product."""
+#         category_id = validated_data.pop('category_id')
+#         category = Category.objects.get(id=category_id)
+
+#         return Product.objects.create(category=category, **validated_data)
+
+#     def update(self, instance, validated_data):
+#         category_id = validated_data.pop('category_id')
+#         instance.category = Category.objects.get(id=category_id)
+#         instance.name = validated_data.get('name', instance.name)
+#         instance.price = validated_data.get('price', instance.price)
+#         instance.description = validated_data.get(
+#             'description', instance.description)
+#         instance.image = validated_data.get('image', instance.image)
+
+#         instance.save()
+
+#         return instance
+
+
+class ProductSerializer(serializers.Serializer):
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all())
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=100)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    description = serializers.CharField(required=False)
+    image = serializers.ImageField(required=False)
+
+    def create(self, validated_data):
+        product = Product.objects.create(
+            category=validated_data['category'],
+            name=validated_data['name'],
+            price=validated_data['price'],
+            description=validated_data.get('description', ''),
+            image=validated_data.get('image', None)
+        )
+        return product
+
+    def update(self, instance, validated_data):
+        instance.category = validated_data.get('category', instance.category)
+        instance.name = validated_data.get('name', instance.name)
+        instance.price = validated_data.get('price', instance.price)
+        instance.description = validated_data.get(
+            'description', instance.description)
+        instance.image = validated_data.get('image', instance.image)
+        instance.save()
+        return instance
+
+
 class CategorySerializer(serializers.Serializer):
     """Serializer for Category."""
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100)
+    products = ProductSerializer(many=True)
 
     def create(self, validated_data):
         category = Category.objects.create(**validated_data)
@@ -31,43 +93,13 @@ class CategorySerializer(serializers.Serializer):
 
         return instance
 
-
-class ProductSerializer(serializers.Serializer):
-    # category = CategorySerializer(read_only=True)
-    id = serializers.IntegerField()
-    category_id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField()
-    price = serializers.DecimalField(max_digits=10, decimal_places=2)
-    image = serializers.ImageField()
-    description = serializers.TimeField()
-
-    def create(self, validated_data):
-        """Create and return Product."""
-        category_id = validated_data.pop('category_id')
-        category = Category.objects.get(id=category_id)
-
-        return Product.objects.create(category=category, **validated_data)
-
-    def update(self, instance, validated_data):
-        category_id = validated_data.pop('category_id')
-        instance.category = Category.objects.get(id=category_id)
-        instance.name = validated_data.get('name', instance.name)
-        instance.price = validated_data.get('price', instance.price)
-        instance.description = validated_data.get(
-            'description', instance.description)
-        instance.image = validated_data.get('image', instance.image)
-
-        instance.save()
-
-        return instance
-
-
 # class CategorySerializer(serializers.ModelSerializer):
 #     """Serializer for our Category."""
 
 #     class Meta:
 #         model = Category
 #         fields = ['id', 'name']
+
 
 """
 class ProductSerializer(serializers.Serializer):
