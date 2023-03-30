@@ -122,9 +122,6 @@ class PublicProductAPITest(TestCase):
         s1 = ProductSerializer(p1)
         s2 = ProductSerializer(p2)
 
-        print("Response =", res.data)
-        print('s1 data', s1.data)
-        print('s2 data', s2.data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn(s2.data, res.data)
         self.assertNotIn(s1.data, res.data)
@@ -194,11 +191,9 @@ class PrivateProductAPITests(TestCase):
                 'description': 'Intel core i5 4th gen, 8gb Ram.',
                 'image': image_file
             }
-            print('payload', payload)
 
             res = self.client.post(
                 PRODUCT_CREATE_URL, payload, format='multipart')
-            print("test Res=", res.data)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
@@ -234,7 +229,6 @@ class PrivateProductAPITests(TestCase):
 
         p1.refresh_from_db()
         s1 = ProductSerializer(p1)
-        print('Response,', res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['price'], payload['price'])
 
@@ -247,3 +241,22 @@ class PrivateProductAPITests(TestCase):
         res = self.client.delete(url)
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_create_product_by_invalid_category_id(self):
+        """Test creating a product with invalid category id raise error."""
+        c1 = Category.objects.create(
+            name='Electronics',
+        )
+        payload = {
+            'name': 'Hp Elitebook 840 G1',
+            'price': Decimal('500.50'),
+            'category_id': 3,
+            'description': 'Intel core i5 4th gen, 8gb Ram.',
+        }
+
+        res = self.client.post(
+            PRODUCT_CREATE_URL, payload, format='json')
+        print(res.status_code)
+        products = Product.objects.all()
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(products.count(), 0)

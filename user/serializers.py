@@ -34,6 +34,19 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+class UserSrializer(serializers.Serializer):
+    """Serializer Without Model Serializer."""
+    email = serializers.EmailField()
+    password = serializers.CharField(min_length=6,write_only=True)
+    name = serializers.CharField(max_length=100, allow_blank=True, allow_null=True)
+
+    def create(self,validated_data):
+        #password = validated_data.pop('password')
+        return get_user_model().objects.create_user(**validated_data)
+    def update(self, instance, validated_data):
+        """Pass"""
+        pass
+
 
 class AuthTokenSerializer(serializers.Serializer):
     """Serializers for auth TOken"""

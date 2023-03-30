@@ -44,7 +44,7 @@ class ProductListByCategory(APIView):
     """Listing products by category."""
 
     def get(self, request, category_id):
-        category = Category.objects.get(id=category_id)
+
         products = Product.objects.filter(category__id=category_id)
         print('products', products)
         serializer = ProductSerializer(products, many=True)

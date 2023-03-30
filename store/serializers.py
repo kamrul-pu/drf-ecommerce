@@ -1,6 +1,7 @@
 """Seralizers for our Store Items."""
 
 from rest_framework import serializers
+from django.http import Http404
 
 from core.models import (
     Category,
@@ -57,7 +58,11 @@ class ProductSerializer(serializers.Serializer):
     image = serializers.ImageField(required=False)
 
     def create(self, validated_data):
-        print("Validated Data ", validated_data)
+        category_id = validated_data['category_id']
+        try:
+            Category.objects.get(id=category_id)
+        except:
+            raise Http404
         product = Product.objects.create(
             category_id=validated_data['category_id'],
             name=validated_data['name'],
