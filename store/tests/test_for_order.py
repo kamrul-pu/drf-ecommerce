@@ -38,4 +38,16 @@ class OrderCustomerTest(TestCase):
         res = self.client.get(ORDER_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        order = Order.objects.all()
+        self.assertEqual(order.count(), 1)
         print("respone data", res.data)
+
+    # def test_customer_order_show_existing(self):
+    #     """Test retrieving customer order."""
+
+    #     res = self.client.get(ORDER_URL)
+
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     order = Order.objects.all()
+    #     self.assertEqual(order.count(), 1)
+    #     print("respone data", res.data)

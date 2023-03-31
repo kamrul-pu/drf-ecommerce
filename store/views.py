@@ -11,12 +11,14 @@ from rest_framework import status
 
 from core.models import (
     Category,
-    Product
+    Product,
+    Order,
 )
 
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
+    OrderSerializer,
 )
 
 
@@ -63,6 +65,21 @@ class ProductDetailView(APIView):
 
 
 # permission_classes[IsAdminUser]
+
+
+class CustomerOrder(APIView):
+    """Customer Order."""
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(
+            customer=customer, complete=False)
+        print("order", order)
+        print('Created', created)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ProductAdminListView(APIView):

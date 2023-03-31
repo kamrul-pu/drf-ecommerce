@@ -84,7 +84,8 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
-    cart_total = models.DecimalField(max_digits=10, decimal_places=2)
+    cart_total = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
     paid_amount = models.DecimalField(
         max_digits=10, decimal_places=2, default=0.0)
 
