@@ -256,7 +256,7 @@ class PrivateProductAPITests(TestCase):
 
         res = self.client.post(
             PRODUCT_CREATE_URL, payload, format='json')
-        print(res.status_code)
+        # print(res.status_code)
         products = Product.objects.all()
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(products.count(), 0)

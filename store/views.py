@@ -46,7 +46,7 @@ class ProductListByCategory(APIView):
     def get(self, request, category_id):
 
         products = Product.objects.filter(category__id=category_id)
-        print('products', products)
+
         serializer = ProductSerializer(products, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

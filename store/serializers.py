@@ -147,3 +147,12 @@ class CategorySerializer(serializers.Serializer):
                 Product.objects.create(category=instance, **product_data)
         return instance
 """
+
+
+class OrderSerializer(serializers.Serializer):
+    """Serializer for Order."""
+    customer_id = serializers.IntegerField(read_only=True)
+    date_order = serializers.DateTimeField()
+    complete = serializers.BooleanField()
+    cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
+    paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)

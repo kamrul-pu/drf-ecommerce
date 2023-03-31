@@ -11,6 +11,8 @@ from django.utils.translation import gettext as _
 
 from rest_framework import serializers
 
+from core.models import Customer
+
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user."""
@@ -22,7 +24,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create and returns a user."""
-        return get_user_model().objects.create_user(**validated_data)
+        user = get_user_model().objects.create_user(**validated_data)
+        name = validated_data.get('name')
+        Customer.objects.create(user=user, name=name)
+        return user
 
     def update(self, instance, validated_data):
         """Update and return a user."""
@@ -34,18 +39,48 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
-class UserSrializer(serializers.Serializer):
-    """Serializer Without Model Serializer."""
-    email = serializers.EmailField()
-    password = serializers.CharField(min_length=6,write_only=True)
-    name = serializers.CharField(max_length=100, allow_blank=True, allow_null=True)
 
-    def create(self,validated_data):
-        #password = validated_data.pop('password')
-        return get_user_model().objects.create_user(**validated_data)
+class CustomerSerializer(serializers.Serializer):
+    """Serializer for Customer."""
+    user = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(
+        max_length=100, allow_null=True, allow_blank=True)
+    phone_number = serializers.CharField(
+        max_length=20, allow_null=True, allow_blank=True)
+
+    def create(self, validated_data):
+        Customer.objects.create(customer=self.user, **validated_data)
+
     def update(self, instance, validated_data):
-        """Pass"""
-        pass
+        instance.name = validated_data.get('name', instance.name)
+        instance.phone_number = validated_data.get(
+            'phone_number', instance.phone_number)
+
+        instance.save()
+
+        return instance
+
+
+# class UserSerializer(serializers.Serializer):
+#     """Serializer Without Model Serializer."""
+#     email = serializers.EmailField()
+#     password = serializers.CharField(min_length=6, write_only=True)
+#     name = serializers.CharField(
+#         max_length=100, allow_blank=True, allow_null=True)
+
+#     def create(self, validated_data):
+#         # password = validated_data.pop('password')
+#         return get_user_model().objects.create_user(**validated_data)
+
+#     def update(self, instance, validated_data):
+#         password = validated_data.pop('password', None)
+#         instance.name = validated_data.get('name', instance.name)
+#         # user = super().update(instance, validated_data)
+#         user = instance
+#         if password:
+#             user.set_password(password)
+#             user.save()
+#         return user
 
 
 class AuthTokenSerializer(serializers.Serializer):

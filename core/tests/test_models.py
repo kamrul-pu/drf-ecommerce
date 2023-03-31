@@ -7,6 +7,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.db.utils import IntegrityError
 
 from core import models
 
@@ -80,3 +81,34 @@ class ModelTests(TestCase):
 
         self.assertEqual(str(product), product.name)
         self.assertEqual(category.id, product.category.id)
+
+    def test_create_customer_success(self):
+        """Test Creating Customer Success."""
+        user = create_user()
+        customer = models.Customer.objects.create(
+            user=user, name='Kamrul', phone_number='123456789')
+
+        self.assertEqual(str(customer), customer.name)
+        self.assertEqual(customer.user_id, user.id)
+
+    def test_customer_one_to_one(self):
+        """Test an user can have only one customer object."""
+        user = create_user()
+        c1 = models.Customer.objects.create(
+            user=user, name='Kamrul', phone_number='123456789')
+
+        self.assertEqual(str(c1), c1.name)
+
+        with self.assertRaises(IntegrityError):
+            models.Customer.objects.create(
+                user=user, name='Test', phone_number='123451234')
+
+    def test_create_order_success(self):
+        """Test creating an order successfull."""
+        user = create_user()
+        customer = models.Customer.objects.create(
+            user=user, name='Kamrul', phone_number='123456789')
+
+        order = models.Order.objects.create(customer=customer, cart_total=500)
+
+        self.assertEqual(str(order), str(order.id))
