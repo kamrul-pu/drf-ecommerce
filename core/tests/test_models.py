@@ -127,7 +127,8 @@ class ModelTests(TestCase):
         user = create_user()
         c1 = models.Customer.objects.create(
             user=user, name='Kamrul', phone_number='123456789')
-        order = models.Order.objects.create(customer=c1, complete=False)
+        order, created = models.Order.objects.get_or_create(
+            customer=c1, complete=False)
         item = models.OrderItem.objects.create(order=order, product=product)
 
-        self.assertEqual(str(item), product.name)
+        self.assertEqual(str(item), str(product.id))

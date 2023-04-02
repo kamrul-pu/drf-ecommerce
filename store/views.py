@@ -13,12 +13,14 @@ from core.models import (
     Category,
     Product,
     Order,
+    OrderItem,
 )
 
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
     OrderSerializer,
+    OrderItemSerializer,
 )
 
 
@@ -76,8 +78,7 @@ class CustomerOrder(APIView):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False)
-        print("order", order)
-        print('Created', created)
+
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -141,3 +142,31 @@ class ProductAdminDetailView(APIView):
         product = self._get_object(pk=pk)
         product.delete()
         return Response({'msg': 'Data Deleted Successfull'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class AddToCart(APIView):
+    """Add or remove item from the cart."""
+
+    def post(self, request, pk, action, format=None):
+        print('action', action)
+        product = Product.objects.get(pk=pk)
+        customer = self.request.user.customer
+        order, created = Order.objects.get_or_create(
+            customer=customer, complete=False)
+
+        print("Order", order, "Created", created)
+
+        order_item, created = OrderItem.objects.get_or_create(
+            order_id=order.id, product_id=product.id)
+
+        if action == 'add':
+            order_item.quantity = (order_item.quantity+1)
+        elif action == 'remove':
+            order_item.quantity = (order_item.quantity+1)
+
+        order_item.save()
+        serializer = OrderItemSerializer(order_item)
+
+        if order_item.quantity <= 0:
+            order_item.delete()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

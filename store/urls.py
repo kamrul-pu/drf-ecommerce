@@ -17,4 +17,6 @@ urlpatterns = [
     path('product-admin-detail/<int:pk>/', views.ProductAdminDetailView.as_view(),
          name='product-admin-detail'),
     path('order/', views.CustomerOrder.as_view(), name='order'),
+    path('order/<int:pk>/<str:action>/',
+         views.AddToCart.as_view(), name='add-to-cart'),
 ]

@@ -6,6 +6,7 @@ from django.http import Http404
 from core.models import (
     Category,
     Product,
+    Order, OrderItem
 )
 
 
@@ -156,3 +157,13 @@ class OrderSerializer(serializers.Serializer):
     complete = serializers.BooleanField()
     cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
     paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+
+class OrderItemSerializer(serializers.Serializer):
+    """Serializer for Order."""
+    order_id = serializers.IntegerField()
+    product_id = serializers.IntegerField()
+    quantity = serializers.IntegerField()
+
+    def create(self, validated_data):
+        order_item = OrderItem.objects.create()
