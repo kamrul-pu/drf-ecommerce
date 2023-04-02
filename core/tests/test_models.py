@@ -112,3 +112,22 @@ class ModelTests(TestCase):
         order = models.Order.objects.create(customer=customer, cart_total=500)
 
         self.assertEqual(str(order), str(order.id))
+
+    def test_add_order_item_success(self):
+        """Test adding a product to order."""
+        category = models.Category.objects.create(
+            name='Electronic',
+        )
+        product = models.Product.objects.create(
+            name='Hp Elitebook 840 G1',
+            price=Decimal('500.50'),
+            category=category,
+            description='Intel core i5 4th gen, 8gb Ram.'
+        )
+        user = create_user()
+        c1 = models.Customer.objects.create(
+            user=user, name='Kamrul', phone_number='123456789')
+        order = models.Order.objects.create(customer=c1, complete=False)
+        item = models.OrderItem.objects.create(order=order, product=product)
+
+        self.assertEqual(str(item), product.name)
