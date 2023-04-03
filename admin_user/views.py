@@ -36,6 +36,8 @@ class ProductAdminList(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
+    serializer_class = ProductSerializer
+
     def get(self, request, format=None):
         products = Product.objects.filter()
         serialzer = ProductSerializer(products, many=True)
@@ -55,6 +57,8 @@ class ProductAdminDetail(APIView):
     """Admin Product Functionality."""
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
+
+    serializer_class = ProductSerializer
 
     def _get_object(self, pk):
         try:
@@ -94,6 +98,7 @@ class ProductAdminDetail(APIView):
 
 class DiscountList(APIView):
     """Apply discount to category."""
+    serializer_class = DiscountSerializer
 
     def get(self, request, format=None):
         discounts = Discount.objects.filter()
@@ -115,6 +120,7 @@ class DiscountList(APIView):
 
 class DiscountDetail(APIView):
     """Discount Retrieve Update Destroy."""
+    serializer_class = DiscountSerializer
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 

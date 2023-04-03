@@ -27,6 +27,8 @@ from .serializers import (
 class CategoryList(APIView):
     """Listing our all Categories."""
 
+    serializer_class = CategorySerializer
+
     def get(self, request):
         categories = Category.objects.all().order_by('-id')
         serializer = CategorySerializer(categories, many=True)
@@ -37,6 +39,8 @@ class CategoryList(APIView):
 class ProductList(APIView):
     """Listing all products."""
 
+    serializer_class = ProductSerializer
+
     def get(self, request):
         products = Product.objects.all().order_by('-id')
         serializer = ProductSerializer(products, many=True)
@@ -46,6 +50,8 @@ class ProductList(APIView):
 
 class ProductListByCategory(APIView):
     """Listing products by category."""
+
+    serializer_class = ProductSerializer
 
     def get(self, request, category_id):
 
@@ -58,6 +64,8 @@ class ProductListByCategory(APIView):
 
 class ProductDetail(APIView):
     """Product Retrieve Update destroy."""
+
+    serializer_class = ProductSerializer
 
     def get(self, request, product_id, format=None):
         product = Product.objects.get(id=product_id)
@@ -74,6 +82,8 @@ class CustomerOrder(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    serializer_class = OrderSerializer
+
     def get(self, request, format=None):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(
@@ -85,6 +95,8 @@ class CustomerOrder(APIView):
 
 class AddToCart(APIView):
     """Add or remove item from the cart."""
+
+    serializer_class = OrderItemSerializer
 
     def post(self, request, pk, action, format=None):
         product = Product.objects.get(pk=pk)

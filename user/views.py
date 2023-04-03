@@ -47,21 +47,23 @@ class CustomerProfile(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
+    serializer_class = CustomerSerializer
+
     def _get_object(self):
         try:
             return Customer.objects.get(customer_id=self.request.user.id)
         except Customer.DoesNotExist:
             raise Http404
 
-    @extend_schema(
-        parameters=[
-            {
-                'name': 'Name',
-                'required': False,
-                'type': 'string',
-            }
-        ]
-    )
+    # @extend_schema(
+    #     parameters=[
+    #         {
+    #             'name': 'Name',
+    #             'required': False,
+    #             'type': 'string',
+    #         }
+    #     ]
+    # )
     def get(self, request, format=None):
         customer = self._get_object()
         serializer = CustomerSerializer(customer)
