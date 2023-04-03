@@ -153,3 +153,27 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(tag), tag.title)
+
+    def test_create_tag_product_connector_success(self):
+        """Test Creating Tag and Product Connector Success."""
+        tag = models.Tag.objects.create(
+            title='Tag1',
+            description="Test Tag",
+        )
+        category = models.Category.objects.create(
+            name='Electronic',
+        )
+        product = models.Product.objects.create(
+            name='Hp Elitebook 840 G1',
+            price=Decimal('500.50'),
+            category=category,
+            description='Intel core i5 4th gen, 8gb Ram.'
+        )
+
+        product_tag_connector = models.ProductTagConnector(
+            tag=tag,
+            product=product
+        )
+
+        self.assertEqual(product_tag_connector.tag_id, tag.id)
+        self.assertEqual(product_tag_connector.product_id, product.id)

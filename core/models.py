@@ -98,6 +98,15 @@ class Product(models.Model):
     #         return self.price
 
 
+class ProductTagConnector(models.Model):
+    """Product Tag connector Model."""
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.tag.title} {self.product.name}"
+
+
 class Customer(models.Model):
     """Model for Customer."""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
