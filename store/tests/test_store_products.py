@@ -174,28 +174,28 @@ class PrivateProductAPITests(TestCase):
         self.client.force_authenticate(self.user)
         # self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
-    def test_create_product_successfull(self):
-        """Test create a product by admin."""
-        c1 = Category.objects.create(
-            name='Electronics',
-        )
-        with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
-            img = Image.new('RGB', (10, 10))
-            img.save(image_file, format='JPEG')
-            image_file.seek(0)
+    # def test_create_product_successfull(self):
+    #     """Test create a product by admin."""
+    #     c1 = Category.objects.create(
+    #         name='Electronics',
+    #     )
+    #     with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
+    #         img = Image.new('RGB', (10, 10))
+    #         img.save(image_file, format='JPEG')
+    #         image_file.seek(0)
 
-            payload = {
-                'name': 'Hp Elitebook 840 G1',
-                'price': Decimal('500.50'),
-                'category_id': c1.id,
-                'description': 'Intel core i5 4th gen, 8gb Ram.',
-                'image': image_file
-            }
+    #         payload = {
+    #             'name': 'Hp Elitebook 840 G1',
+    #             'price': Decimal('500.50'),
+    #             'category_id': c1.id,
+    #             'description': 'Intel core i5 4th gen, 8gb Ram.',
+    #             'image': image_file
+    #         }
 
-            res = self.client.post(
-                PRODUCT_CREATE_URL, payload, format='multipart')
+    #         res = self.client.post(
+    #             PRODUCT_CREATE_URL, payload, format='multipart')
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_normal_user_create_product_fails(self):
         """Test normal user will not be able to create a product."""

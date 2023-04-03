@@ -17,6 +17,13 @@ def create_user(email='user@example.com', password='testpass123'):
     return get_user_model().objects.create_user(email, password)
 
 
+def create_category():
+    """Create and returns a category."""
+    return models.Category.objects.create(
+        name='Electronic',
+    )
+
+
 class ModelTests(TestCase):
     """Test models."""
 
@@ -69,9 +76,7 @@ class ModelTests(TestCase):
 
     def test_create_product_success(self):
         """Test creating Product is successfull."""
-        category = models.Category.objects.create(
-            name='Electronic',
-        )
+        category = create_category()
         product = models.Product.objects.create(
             name='Hp Elitebook 840 G1',
             price=Decimal('500.50'),
@@ -132,3 +137,10 @@ class ModelTests(TestCase):
         item = models.OrderItem.objects.create(order=order, product=product)
 
         self.assertEqual(str(item), str(product.id))
+
+    def test_create_discount_object(self):
+        """Test creating discount Object."""
+        category = create_category()
+        discount = models.Discount.objects.create(
+            category=category, name='Eid Discount', percentage=20)
+        self.assertEqual(str(discount), discount.name)

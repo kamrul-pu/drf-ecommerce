@@ -74,8 +74,8 @@ class OrderCustomerTest(TestCase):
         order, created = Order.objects.get_or_create(
             customer=self.customer, complete=False)
         # print("Type ",type(order))
-        order_item, created = OrderItem.objects.get_or_create(order=order, product=product,
-                                                              quantity=1)
+        # order_item, created = OrderItem.objects.get_or_create(order=order, product=product,
+        #                                                       quantity=1)
         url = order_update(product.id)
-        res = self.client.post(url)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

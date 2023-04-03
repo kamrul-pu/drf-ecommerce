@@ -24,7 +24,7 @@ from .serializers import (
 )
 
 
-class CategoryListView(APIView):
+class CategoryList(APIView):
     """Listing our all Categories."""
 
     def get(self, request):
@@ -34,7 +34,7 @@ class CategoryListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ProductListView(APIView):
+class ProductList(APIView):
     """Listing all products."""
 
     def get(self, request):
@@ -56,7 +56,7 @@ class ProductListByCategory(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ProductDetailView(APIView):
+class ProductDetail(APIView):
     """Product Retrieve Update destroy."""
 
     def get(self, request, product_id, format=None):
@@ -162,7 +162,7 @@ class AddToCart(APIView):
         if action == 'add':
             order_item.quantity = (order_item.quantity+1)
         elif action == 'remove':
-            order_item.quantity = (order_item.quantity+1)
+            order_item.quantity = (order_item.quantity-1)
 
         order_item.save()
         serializer = OrderItemSerializer(order_item)
