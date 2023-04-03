@@ -144,3 +144,12 @@ class ModelTests(TestCase):
         discount = models.Discount.objects.create(
             category=category, name='Eid Discount', percentage=20)
         self.assertEqual(str(discount), discount.name)
+
+    def test_create_tag_success(self):
+        """Test Creating tag successfull."""
+        tag = models.Tag.objects.create(
+            title='Tag1',
+            description="Test Tag",
+        )
+
+        self.assertEqual(str(tag), tag.title)

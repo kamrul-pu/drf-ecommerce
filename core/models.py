@@ -65,6 +65,15 @@ class Discount(models.Model):
         return f"{self.name}"
 
 
+class Tag(models.Model):
+    """Tag model."""
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+
 class Product(models.Model):
     """Our Product Database Model."""
     category = models.ForeignKey(

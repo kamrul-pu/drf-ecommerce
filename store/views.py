@@ -87,13 +87,12 @@ class AddToCart(APIView):
     """Add or remove item from the cart."""
 
     def post(self, request, pk, action, format=None):
-        print('action', action)
         product = Product.objects.get(pk=pk)
         customer = self.request.user.customer
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False)
 
-        print("Order", order, "Created", created)
+        # print("Order", order, "Created", created)
 
         order_item, created = OrderItem.objects.get_or_create(
             order_id=order.id, product_id=product.id)
