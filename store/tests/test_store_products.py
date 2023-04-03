@@ -26,7 +26,7 @@ from store.serializers import (
 
 PRODUCT_URL = reverse('store:products')
 CATEGORY_URL = reverse('store:category')
-PRODUCT_CREATE_URL = reverse('store:product-admin')
+PRODUCT_CREATE_URL = reverse('admin_user:product-admin')
 
 
 def detail_url(category_id):
@@ -41,7 +41,7 @@ def detail_url_for_product(product_id):
 
 def detail_url_for_product_admin(product_id):
     """Create and return an url for get product admin."""
-    return reverse('store:product-admin-detail', args=[product_id])
+    return reverse('admin_user:product-admin-detail', args=[product_id])
 
 
 def create_product(**params):
