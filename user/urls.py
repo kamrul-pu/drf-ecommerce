@@ -20,6 +20,6 @@ urlpatterns = [
     path('customer/', views.CustomerProfile.as_view(), name='customer'),
     path('token/', TokenObtainPairView.as_view(), name='get_token'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
 ]

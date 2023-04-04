@@ -5,6 +5,8 @@ from . import views
 app_name = 'admin_user'
 
 urlpatterns = [
+    path('tags/', views.TagList.as_view(), name='tags'),
+    path('tags/<int:pk>/', views.TagDetail.as_view(), name='tag-detail'),
     path('product-admin/', views.ProductAdminList.as_view(), name='product-admin'),
     path('product-admin-detail/<int:pk>/', views.ProductAdminDetail.as_view(),
          name='product-admin-detail'),
@@ -15,4 +17,5 @@ urlpatterns = [
     path('order-details/<int:pk>/', views.AdminOrderDetail.as_view(),
          name='admin-order-detail'),
     path('tag-product/', views.TagProductList.as_view(), name='tag-product'),
+
 ]

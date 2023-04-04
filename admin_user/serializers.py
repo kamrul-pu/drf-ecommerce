@@ -7,6 +7,34 @@ from core.models import (
 )
 
 
+class TagSerialiser(serializers.Serializer):
+    """Serializer for tag."""
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField()
+    description = serializers.CharField(
+        style={'base_template': 'textarea.html'})
+
+    def validate(self, attrs):
+        title = attrs.get('title')
+        exists = Tag.objects.filter(title=title).exists()
+
+        if exists:
+            raise serializers.ValidationError("Tag Already Exists.")
+        else:
+            return attrs
+
+    def create(self, validated_data):
+        return Tag.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get(
+            'description', instance.description)
+
+        instance.save()
+        return instance
+
+
 class DiscountSerializer(serializers.Serializer):
     """Serializer for discount."""
     id = serializers.IntegerField(read_only=True)
@@ -79,17 +107,23 @@ class TagProductConnectorSerializer(serializers.Serializer):
     tag_id = serializers.IntegerField()
     product_id = serializers.IntegerField()
 
-    def create(self, validated_data):
-        tag_id = validated_data['tag_id']
+    def validate(self, data):
+        tag_id = data.get('tag_id')
+        product_id = data.get('product_id')
         try:
             Tag.objects.get(id=tag_id)
         except Tag.DoesNotExist:
-            raise Http404
-        product_id = validated_data['product_id']
+            raise serializers.ValidationError("Tag does not exist")
         try:
             Product.objects.get(id=product_id)
         except Product.DoesNotExist:
-            raise Http404
+            raise serializers.ValidationError("Product does not exist")
+        return data
+
+    def create(self, validated_data):
+        tag_id = validated_data['tag_id']
+
+        product_id = validated_data['product_id']
 
         product_tag_connect = ProductTagConnector.objects.create(
             tag_id=tag_id,

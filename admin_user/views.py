@@ -16,6 +16,7 @@ from core.models import (
     OrderItem,
     Discount,
     ProductTagConnector,
+    Tag,
 )
 
 from store.serializers import (
@@ -28,7 +29,8 @@ from store.serializers import (
 from admin_user.serializers import (
     OrderSerializerAdmin,
     OrderItemSerializerAdmin,
-    TagProductConnectorSerializer
+    TagProductConnectorSerializer,
+    TagSerialiser,
 )
 from admin_user.serializers import (
     DiscountSerializer,
@@ -37,9 +39,67 @@ from admin_user.serializers import (
 # permission_classes[IsAdminUser]
 
 
+class TagList(APIView):
+    """API View For create and listing Tags."""
+    permission_classes = [IsAdminUser]
+    serializer_class = TagSerialiser
+
+    def get(self, request, format=None):
+        tags = Tag.objects.filter()
+        serilizer = TagSerialiser(tags, many=True)
+
+        return Response(serilizer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        serializer = TagSerialiser(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TagDetail(APIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = TagSerialiser
+
+    def _get_object(self, pk):
+        try:
+            return Tag.objects.get(pk=pk)
+        except Tag.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        tag = self._get_object(pk)
+        serializer = TagSerialiser(tag)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk, format=None):
+        tag = self._get_object(pk)
+        serializer = TagSerialiser(tag, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk, format=None):
+        tag = self._get_object(pk)
+        serializer = TagSerialiser(tag, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ProductAdminList(APIView):
     """Create and return a product."""
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.]
     permission_classes = [IsAdminUser]
 
     serializer_class = ProductSerializer
@@ -61,7 +121,7 @@ class ProductAdminList(APIView):
 
 class ProductAdminDetail(APIView):
     """Admin Product Functionality."""
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
     serializer_class = ProductSerializer
@@ -106,7 +166,7 @@ class DiscountList(APIView):
     """Apply discount to category."""
     serializer_class = DiscountSerializer
 
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
     def get(self, request, format=None):
@@ -128,7 +188,7 @@ class DiscountList(APIView):
 class DiscountDetail(APIView):
     """Discount Retrieve Update Destroy."""
     serializer_class = DiscountSerializer
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
     def _get_object(self, pk):
@@ -170,7 +230,7 @@ class DiscountDetail(APIView):
 class AdminOrderList(APIView):
     """View for listing all order."""
 
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
     serializer_class = OrderSerializerAdmin
@@ -187,7 +247,7 @@ class AdminOrderList(APIView):
 class AdminOrderDetail(APIView):
     """View for listing all order."""
 
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
     serializer_class = OrderSerializerAdmin
@@ -232,7 +292,7 @@ class AdminOrderDetail(APIView):
 class TagProductList(APIView):
     """View for Tag Product Connector."""
 
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
     serializer_class = TagProductConnectorSerializer

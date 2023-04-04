@@ -14,9 +14,18 @@ from core.models import (
 
 from admin_user.serializers import (
     DiscountSerializer,
+    TagSerialiser,
+    # CategorySerializer,
 )
 
 DISCOUNT_URL = reverse('admin_user:discount')
+TAG_URL = reverse('admin_user:tags')
+CATEGORY_URL = reverse('admin-site:category')
+
+
+def get_tag_url(tag_id):
+    """Create and return a tag url."""
+    return reverse('admin_user:tag-detail', args=[tag_id])
 
 
 def get_detail_url(discount_id):
@@ -123,3 +132,48 @@ class PrivateDiscountAPITest(TestCase):
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_create_tag_success(self):
+        """Create a tag by admin user success."""
+        payload = {
+            'title': 'Sample Tag',
+            'description': 'Sample Tag Create'
+        }
+
+        response = self.client.post(TAG_URL, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # tag = TagSerialiser(response)
+
+        self.assertEqual(response.data['title'], payload['title'])
+
+    def test_update_tag_success(self):
+        """Test Updating tag is successfull."""
+        payload = {
+            'title': 'Sample Tag',
+            'description': 'Sample Tag Created'
+        }
+
+        response = self.client.post(TAG_URL, payload)
+        # print('response ', response.data)
+        payload = {
+            'title': 'Sample Tag Updated',
+            'description': 'Updated Description'
+        }
+
+        url = get_tag_url(response.data['id'])
+        response1 = self.client.put(url, payload)
+
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+        self.assertEqual(response1.data['title'], payload['title'])
+
+    def test_create_category_success(self):
+        """Test Creating category successfull."""
+        payload = {
+            'name': 'Sample Category'
+        }
+
+        response = self.client.post(CATEGORY_URL, payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.assertEqual(response.data['title'], payload['title'])
