@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.http import Http404
 
 from core.models import (
-    Category, Discount,
+    Category, Discount, OrderItem
 )
 
 
@@ -36,3 +36,26 @@ class DiscountSerializer(serializers.Serializer):
 
         instance.save()
         return instance
+
+
+class OrderItemSerializerAdmin(serializers.Serializer):
+    """Serializer for Order."""
+    order_id = serializers.IntegerField()
+    id = serializers.IntegerField()
+    product = serializers.CharField()
+    quantity = serializers.IntegerField()
+
+    def create(self, validated_data):
+        order_item = OrderItem.objects.create()
+
+
+class OrderSerializerAdmin(serializers.Serializer):
+    """Serializer for Order."""
+    customer_id = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    date_ordered = serializers.DateTimeField()
+    complete = serializers.BooleanField()
+    cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
+    paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+    # orderitem = OrderItemSerializerAdmin(many=True)

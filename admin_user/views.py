@@ -20,9 +20,13 @@ from core.models import (
 from store.serializers import (
     CategorySerializer,
     ProductSerializer,
-    OrderSerializer,
-    OrderItemSerializer,
+    # OrderSerializer,
+    # OrderItemSerializer,
 
+)
+from admin_user.serializers import (
+    OrderSerializerAdmin,
+    OrderItemSerializerAdmin,
 )
 from admin_user.serializers import (
     DiscountSerializer,
@@ -158,3 +162,31 @@ class DiscountDetail(APIView):
         discount = self._get_object(pk)
         discount.delete()
         return Response({'msg': 'Delelte Successfull'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminOrderList(APIView):
+    """View for listing all order."""
+
+    serializer_class = OrderSerializerAdmin
+
+    def get(self, request, format=None):
+        orders = Order.objects.filter().prefetch_related("orderitem_set")
+        print("Orders", orders.orderitem)
+        for item in orders:
+            print('Items', item)
+        serializer = OrderSerializerAdmin(orders, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AdminOrderDetail(APIView):
+    """View for listing all order."""
+
+    serializer_class = OrderSerializerAdmin
+
+    def get(self, request, pk, format=None):
+        order = Order.objects.get(pk=pk)
+        order_items = OrderItem.objects.filter()
+        serializer = OrderItemSerializerAdmin(order_items, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
