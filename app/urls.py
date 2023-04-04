@@ -20,8 +20,8 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name='api-schema'),
         name='api-docs'
     ),
-    path('api/user/', include('user.urls')),
-    path('api/store/', include('store.urls')),
+    path('user/', include('user.urls')),
+    path('store/', include('store.urls')),
 ]
 
 """DRF yasg"""

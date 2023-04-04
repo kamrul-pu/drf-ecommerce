@@ -14,6 +14,7 @@ from core.models import (
     Product,
     Order,
     OrderItem,
+    Customer,
 )
 
 from .serializers import (
@@ -97,10 +98,13 @@ class AddToCart(APIView):
     """Add or remove item from the cart."""
 
     serializer_class = OrderItemSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk, action, format=None):
         product = Product.objects.get(pk=pk)
-        customer = self.request.user.customer
+        # customer = self.request.user.customer
+        customer, created = Customer.objects.get_or_create(user=request.user)
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False)
 
@@ -115,8 +119,8 @@ class AddToCart(APIView):
             order_item.quantity = (order_item.quantity-1)
 
         order_item.save()
-        serializer = OrderItemSerializer(order_item)
+        # serializer = OrderItemSerializer(order_item)
 
         if order_item.quantity <= 0:
             order_item.delete()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'msg': 'Add to cart Success'}, status=status.HTTP_201_CREATED)

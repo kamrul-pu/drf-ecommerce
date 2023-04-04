@@ -162,9 +162,9 @@ class OrderSerializer(serializers.Serializer):
 
 class OrderItemSerializer(serializers.Serializer):
     """Serializer for Order."""
-    order_id = serializers.IntegerField()
-    product_id = serializers.IntegerField()
-    quantity = serializers.IntegerField()
+    order_id = serializers.IntegerField(read_only=True)
+    product_id = serializers.IntegerField(read_only=True)
+    quantity = serializers.IntegerField(default=1)
 
     def create(self, validated_data):
         order_item = OrderItem.objects.create()

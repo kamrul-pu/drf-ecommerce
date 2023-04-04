@@ -89,13 +89,13 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    # def calculate_discount(self):
-    #     """Calculate discount based on category."""
-    #     try:
-    #         discount = Discount.objects.get(category=self.category)
-    #         return self.price * (1 - discount.percentage/100)
-    #     except Category.DoesNotExist:
-    #         return self.price
+    def calculate_discount(self):
+        """Calculate discount based on category."""
+        try:
+            discount = Discount.objects.get(category=self.category)
+            return self.price * (1 - discount.percentage/100)
+        except Discount.DoesNotExist:
+            return self.price
 
 
 class ProductTagConnector(models.Model):
@@ -141,7 +141,8 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     """Model for storing order Items."""
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='order_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
     date_added = models.DateTimeField(auto_now_add=True)

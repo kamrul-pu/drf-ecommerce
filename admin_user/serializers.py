@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.http import Http404
 
 from core.models import (
-    Category, Discount, OrderItem
+    Category, Discount, OrderItem, Tag, Product, ProductTagConnector
 )
 
 
@@ -40,7 +40,7 @@ class DiscountSerializer(serializers.Serializer):
 
 class OrderItemSerializerAdmin(serializers.Serializer):
     """Serializer for Order."""
-    order_id = serializers.IntegerField()
+    # order_id = serializers.IntegerField()
     id = serializers.IntegerField()
     product = serializers.CharField()
     quantity = serializers.IntegerField()
@@ -57,5 +57,43 @@ class OrderSerializerAdmin(serializers.Serializer):
     complete = serializers.BooleanField()
     cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
     paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    order_items = OrderItemSerializerAdmin(many=True)
+    # order_item = OrderItemSerializerAdmin(many=True)
 
-    # orderitem = OrderItemSerializerAdmin(many=True)
+    def update(self, instance, validated_data):
+        instance.complete = validated_data.get('complete', instance.complete)
+        instance.cart_total = validated_data.get(
+            'cart_total', instance.cart_total)
+        instance.paid_amount = validated_data.get(
+            'paid_amount', instance.paid_amount)
+        instance.order_items = validated_data.get(
+            'order_items', instance.order_items)
+
+        instance.save()
+
+        return instance
+
+
+class TagProductConnectorSerializer(serializers.Serializer):
+    """Tag product Connector serializer."""
+    tag_id = serializers.IntegerField()
+    product_id = serializers.IntegerField()
+
+    def create(self, validated_data):
+        tag_id = validated_data['tag_id']
+        try:
+            Tag.objects.get(id=tag_id)
+        except Tag.DoesNotExist:
+            raise Http404
+        product_id = validated_data['product_id']
+        try:
+            Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            raise Http404
+
+        product_tag_connect = ProductTagConnector.objects.create(
+            tag_id=tag_id,
+            product_id=product_id
+        )
+
+        return product_tag_connect

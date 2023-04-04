@@ -49,9 +49,9 @@ class CustomerProfile(APIView):
 
     serializer_class = CustomerSerializer
 
-    def _get_object(self):
+    def _get_object(self, request):
         try:
-            return Customer.objects.get(customer_id=self.request.user.id)
+            return Customer.objects.get(user_id=request.user.id)
         except Customer.DoesNotExist:
             raise Http404
 
@@ -65,7 +65,7 @@ class CustomerProfile(APIView):
     #     ]
     # )
     def get(self, request, format=None):
-        customer = self._get_object()
+        customer = self._get_object(request)
         serializer = CustomerSerializer(customer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

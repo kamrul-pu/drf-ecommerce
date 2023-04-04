@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CustomerSerializer(serializers.Serializer):
     """Serializer for Customer."""
-    user = serializers.IntegerField(read_only=True)
+    # user = serializers.IntegerField(read_only=True)
     name = serializers.CharField(
         max_length=100, allow_null=True, allow_blank=True)
     phone_number = serializers.CharField(
