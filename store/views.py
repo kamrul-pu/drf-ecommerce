@@ -80,7 +80,7 @@ class ProductDetail(APIView):
 
 class CustomerOrder(APIView):
     """Customer Order."""
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     serializer_class = OrderSerializer
@@ -98,7 +98,7 @@ class AddToCart(APIView):
     """Add or remove item from the cart."""
 
     serializer_class = OrderItemSerializer
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk, action, format=None):

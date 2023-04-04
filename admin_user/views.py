@@ -106,7 +106,7 @@ class TagDetail(APIView):
 class CatgoryList(APIView):
     """Category List Create using API View."""
     permission_classes = [IsAdminUser]
-    serializer_class = TagSerialiser
+    serializer_class = CategorySerializer
 
     def get(self, request, format=None):
         category = Category.objects.filter()
@@ -125,7 +125,7 @@ class CatgoryList(APIView):
 class CatgoryDetail(APIView):
     """Category List Create using API View."""
     permission_classes = [IsAdminUser]
-    serializer_class = TagSerialiser
+    serializer_class = CategorySerializer
 
     def _get_object(self, pk):
         try:
