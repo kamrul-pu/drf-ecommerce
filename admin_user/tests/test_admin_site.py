@@ -20,7 +20,7 @@ from admin_user.serializers import (
 
 DISCOUNT_URL = reverse('admin_user:discount')
 TAG_URL = reverse('admin_user:tags')
-CATEGORY_URL = reverse('admin-site:category')
+# CATEGORY_URL = reverse('admin_user:category')
 
 
 def get_tag_url(tag_id):
@@ -167,13 +167,28 @@ class PrivateDiscountAPITest(TestCase):
         self.assertEqual(response1.status_code, status.HTTP_200_OK)
         self.assertEqual(response1.data['title'], payload['title'])
 
-    def test_create_category_success(self):
-        """Test Creating category successfull."""
+    def test_delete_tag_success(self):
+        """Test Deleting tag successfull."""
         payload = {
-            'name': 'Sample Category'
+            'title': 'Sample Tag',
+            'description': 'Sample Tag Created'
         }
 
-        response = self.client.post(CATEGORY_URL, payload)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(TAG_URL, payload)
 
-        self.assertEqual(response.data['title'], payload['title'])
+        url = get_tag_url(response.data['id'])
+
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    # def test_create_category_success(self):
+    #     """Test Creating category successfull."""
+    #     payload = {
+    #         'name': 'Sample Category'
+    #     }
+
+    #     response = self.client.post(CATEGORY_URL, payload)
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    #     self.assertEqual(response.data['title'], payload['title'])

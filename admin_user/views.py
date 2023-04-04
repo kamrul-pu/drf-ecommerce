@@ -96,6 +96,11 @@ class TagDetail(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, pk, format=None):
+        tag = self._get_object(pk)
+        tag.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ProductAdminList(APIView):
     """Create and return a product."""
