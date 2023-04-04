@@ -15,17 +15,22 @@ from core.models import (
 from admin_user.serializers import (
     DiscountSerializer,
     TagSerialiser,
-    # CategorySerializer,
+    CategorySerializer,
 )
 
 DISCOUNT_URL = reverse('admin_user:discount')
 TAG_URL = reverse('admin_user:tags')
-# CATEGORY_URL = reverse('admin_user:category')
+CATEGORY_URL = reverse('admin_user:category')
 
 
 def get_tag_url(tag_id):
     """Create and return a tag url."""
     return reverse('admin_user:tag-detail', args=[tag_id])
+
+
+def get_category_url(category_id):
+    """Create and return category url"""
+    return reverse('admin_user:category-detail', args=[category_id])
 
 
 def get_detail_url(discount_id):
@@ -182,13 +187,41 @@ class PrivateDiscountAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    # def test_create_category_success(self):
-    #     """Test Creating category successfull."""
-    #     payload = {
-    #         'name': 'Sample Category'
-    #     }
+    def test_create_category_success(self):
+        """Test Creating category successfull."""
+        payload = {
+            'name': 'Sample Category'
+        }
 
-    #     response = self.client.post(CATEGORY_URL, payload)
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(CATEGORY_URL, payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    #     self.assertEqual(response.data['title'], payload['title'])
+        self.assertEqual(response.data['name'], payload['name'])
+
+    def test_update_category_success(self):
+        """Test Updating Category Success."""
+        payload = {
+            'name': 'Sample Category'
+        }
+
+        category = self.client.post(CATEGORY_URL, payload)
+        payload = {
+            'name': 'Sample Category Updated'
+        }
+
+        url = get_category_url(category.data['id'])
+        response = self.client.patch(url, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], payload['name'])
+
+    def test_delete_category_success(self):
+        """Test Deleting category success."""
+        payload = {
+            'name': 'Sample Category'
+        }
+        category = self.client.post(CATEGORY_URL, payload)
+        url = get_category_url(category.data['id'])
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

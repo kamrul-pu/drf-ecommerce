@@ -20,7 +20,7 @@ from core.models import (
 )
 
 from store.serializers import (
-    CategorySerializer,
+    # CategorySerializer,
     ProductSerializer,
     # OrderSerializer,
     # OrderItemSerializer,
@@ -31,6 +31,7 @@ from admin_user.serializers import (
     OrderItemSerializerAdmin,
     TagProductConnectorSerializer,
     TagSerialiser,
+    CategorySerializer,
 )
 from admin_user.serializers import (
     DiscountSerializer,
@@ -99,6 +100,66 @@ class TagDetail(APIView):
     def delete(self, request, pk, format=None):
         tag = self._get_object(pk)
         tag.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CatgoryList(APIView):
+    """Category List Create using API View."""
+    permission_classes = [IsAdminUser]
+    serializer_class = TagSerialiser
+
+    def get(self, request, format=None):
+        category = Category.objects.filter()
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CatgoryDetail(APIView):
+    """Category List Create using API View."""
+    permission_classes = [IsAdminUser]
+    serializer_class = TagSerialiser
+
+    def _get_object(self, pk):
+        try:
+            return Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        category = self._get_object(pk)
+        serializer = CategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk, format=None):
+        category = self._get_object(pk)
+        serializer = CategorySerializer(category, request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk, format=None):
+        category = self._get_object(pk)
+        serializer = CategorySerializer(category, request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        category = self._get_object(pk)
+        category.delete()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

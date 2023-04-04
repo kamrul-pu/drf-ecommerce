@@ -7,6 +7,8 @@ app_name = 'admin_user'
 urlpatterns = [
     path('tags/', views.TagList.as_view(), name='tags'),
     path('tags/<int:pk>/', views.TagDetail.as_view(), name='tag-detail'),
+    path('category/', views.CatgoryList.as_view(), name='category'),
+    path('category/<int:pk>/', views.CatgoryDetail.as_view(), name='category-detail'),
     path('product-admin/', views.ProductAdminList.as_view(), name='product-admin'),
     path('product-admin-detail/<int:pk>/', views.ProductAdminDetail.as_view(),
          name='product-admin-detail'),
