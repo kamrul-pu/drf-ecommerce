@@ -7,6 +7,8 @@ from django.contrib.auth import (
     authenticate,
 )
 
+import re
+
 from django.utils.translation import gettext as _
 
 from rest_framework import serializers
@@ -46,7 +48,15 @@ class CustomerSerializer(serializers.Serializer):
     name = serializers.CharField(
         max_length=100, allow_null=True, allow_blank=True)
     phone_number = serializers.CharField(
-        max_length=20, allow_null=True, allow_blank=True)
+        max_length=15, allow_null=True, allow_blank=True)
+
+    def validate_phone_number(self, value):
+        """Validate that the number is bangladeshi."""
+        pattern = re.compile(r'^((\+|00)88)?01\d{9}$')
+        if not pattern.match(value):
+            raise serializers.ValidationError('Invalid Phone Number.')
+
+        return value
 
     def create(self, validated_data):
         Customer.objects.create(customer=self.user, **validated_data)

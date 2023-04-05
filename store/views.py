@@ -38,7 +38,7 @@ class CategoryList(APIView):
 
     def get(self, request):
         categories = Category.objects.all().order_by('-id')
-        serializer = CategorySerializer(categories, many=True)
+        serializer = self.serializer_class(categories, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -84,7 +84,7 @@ class ProductListByCategory(APIView):
 
         products = Product.objects.filter(category__id=category_id)
 
-        serializer = ProductSerializer(products, many=True)
+        serializer = self.serializer_class(products, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -96,7 +96,7 @@ class ProductDetail(APIView):
 
     def get(self, request, product_id, format=None):
         product = Product.objects.get(id=product_id)
-        serializer = ProductSerializer(product, many=False)
+        serializer = self.serializer_class(product, many=False)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -116,7 +116,7 @@ class CustomerOrder(APIView):
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False)
 
-        serializer = OrderSerializer(order)
+        serializer = self.serializer_class(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

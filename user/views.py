@@ -79,7 +79,7 @@ class CustomerProfile(APIView):
     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, format=None):
-        customer = self._get_object()
+        customer = self._get_object(request)
         serialier = CustomerSerializer(
             customer, data=request.data, partial=True)
 
@@ -89,7 +89,7 @@ class CustomerProfile(APIView):
         return Response(serialier.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
-        customer = self._get_object()
+        customer = self._get_object(request)
         serialier = CustomerSerializer(
             customer, data=request.data)
 

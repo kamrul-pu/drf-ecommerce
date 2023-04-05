@@ -28,10 +28,8 @@ from core.models import (
 )
 
 from store.serializers import (
-    # CategorySerializer,
     ProductSerializer,
-    # OrderSerializer,
-    # OrderItemSerializer,
+
 
 )
 from admin_user.serializers import (
