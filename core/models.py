@@ -150,7 +150,6 @@ class OrderItem(models.Model):
     def __str__(self):
         return f'{self.id}'
 
-    # @property
     def get_total(self):
         """Calculate and return total price."""
         return self.product.price * self.quantity

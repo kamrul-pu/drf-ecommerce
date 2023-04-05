@@ -66,7 +66,7 @@ class CustomerProfile(APIView):
     # )
     def get(self, request, format=None):
         customer = self._get_object(request)
-        serializer = CustomerSerializer(customer)
+        serializer = self.serializer_class(customer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # def post(self, request, format=None):
@@ -80,7 +80,7 @@ class CustomerProfile(APIView):
 
     def patch(self, request, format=None):
         customer = self._get_object(request)
-        serialier = CustomerSerializer(
+        serialier = self.serializer_class(
             customer, data=request.data, partial=True)
 
         if serialier.is_valid():
@@ -90,7 +90,7 @@ class CustomerProfile(APIView):
 
     def put(self, request, format=None):
         customer = self._get_object(request)
-        serialier = CustomerSerializer(
+        serialier = self.serializer_class(
             customer, data=request.data)
 
         if serialier.is_valid():

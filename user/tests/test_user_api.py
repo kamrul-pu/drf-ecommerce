@@ -32,12 +32,12 @@ class PublicUserAPITests(TestCase):
             'name': 'Test Name',
         }
 
-        res = self.client.post(CREATE_USER_URL, payload)
+        response = self.client.post(CREATE_USER_URL, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user = get_user_model().objects.get(email=payload['email'])
         self.assertTrue(user.check_password(payload['password']))
-        self.assertNotIn('password', res.data)
+        self.assertNotIn('password', response.data)
 
     def test_users_with_existing_email_error(self):
         """Test error returned if the user email exists."""
@@ -48,9 +48,9 @@ class PublicUserAPITests(TestCase):
         }
 
         create_user(**payload)
-        res = self.client.post(CREATE_USER_URL, payload)
+        response = self.client.post(CREATE_USER_URL, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short_error(self):
         """Test an error is returned if password less than 5 characters."""
@@ -61,8 +61,8 @@ class PublicUserAPITests(TestCase):
             'name': 'Test Name'
         }
 
-        res = self.client.post(CREATE_USER_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post(CREATE_USER_URL, payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         user_exists = get_user_model().objects.filter(
             email=payload['email']
         ).exists()
@@ -109,9 +109,9 @@ class PublicUserAPITests(TestCase):
 
     def test_retrieve_user_authorized(self):
         """Test authentication is required for users."""
-        res = self.client.get(ME_URL)
+        response = self.client.get(ME_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class PrivateUserApiTests(TestCase):
@@ -128,27 +128,28 @@ class PrivateUserApiTests(TestCase):
 
     def test_retrieve_profile_success(self):
         """Test retrieving profile for logged in user."""
-        res = self.client.get(ME_URL)
+        response = self.client.get(ME_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, {
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {
             'name': self.user.name,
             'email': self.user.email,
         })
 
     def test_me_not_allowed(self):
         """Tets POST is not allowed for the me endpoint."""
-        res = self.client.post(ME_URL, {})
+        response = self.client.post(ME_URL, {})
 
-        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_update_user_profile(self):
         """Test updating the user profile for the authenticated user."""
         payload = {'name': 'Updated Name', 'password': 'newpassword'}
 
-        res = self.client.patch(ME_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        response = self.client.patch(ME_URL, payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.user.refresh_from_db()
-        self.assertEqual(self.user.name, res.data['name'])
+        self.assertEqual(self.user.name, response.data['name'])
         self.assertEqual(self.user.name, payload['name'])
         self.assertTrue(self.user.check_password(payload['password']))

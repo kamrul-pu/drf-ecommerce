@@ -82,22 +82,21 @@ class PublicProductAPITest(TestCase):
 
         serializer = CategorySerializer(categories, many=True)
 
-        res = self.client.get(CATEGORY_URL)
+        response = self.client.get(CATEGORY_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
 
     def test_list_of_products(self):
         """Test listing our products."""
         p1 = create_product()
         p2 = create_product(name='SurfaceBook 2', price=500.00)
 
-        res = self.client.get(PRODUCT_URL)
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        response = self.client.get(PRODUCT_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         products = Product.objects.all().order_by('-id')
         serializer = ProductSerializer(products, many=True)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(response.data['products'], serializer.data)
 
     def test_list_product_by_category(self):
         """Test displaying the products based on Category."""
@@ -117,14 +116,14 @@ class PublicProductAPITest(TestCase):
 
         url = detail_url(c2.id)
 
-        res = self.client.get(url)
+        response = self.client.get(url)
 
         s1 = ProductSerializer(p1)
         s2 = ProductSerializer(p2)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn(s2.data, res.data)
-        self.assertNotIn(s1.data, res.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(s2.data, response.data)
+        self.assertNotIn(s1.data, response.data)
 
     def test_retrieve_individual_product(self):
         """Test retriving asingle product by id."""
@@ -144,21 +143,22 @@ class PublicProductAPITest(TestCase):
 
         url = detail_url_for_product(p1.id)
 
-        res = self.client.get(url)
+        response = self.client.get(url)
         s1 = ProductSerializer(p1)
         s2 = ProductSerializer(p2)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(s1.data, res.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(s1.data, response.data)
 
     def test_post_is_not_allowed_in_product(self):
         """Test You cant't update product only admin can."""
         p1 = create_product()
         url = detail_url_for_product(p1.id)
 
-        res = self.client.post(url, {})
+        response = self.client.post(url, {})
 
-        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class PrivateProductAPITests(TestCase):
@@ -213,8 +213,8 @@ class PrivateProductAPITests(TestCase):
             'description': 'Intel core i5 4th gen, 8gb Ram.',
         }
 
-        res = self.client.post(PRODUCT_CREATE_URL, payload, format='json')
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.post(PRODUCT_CREATE_URL, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_product_by_admin(self):
         """Test updating a product by admin."""
@@ -225,12 +225,12 @@ class PrivateProductAPITests(TestCase):
             'name': 'Product name changed',
             'price': '250.50'
         }
-        res = self.client.patch(url, payload, format='json')
+        response = self.client.patch(url, payload, format='json')
 
         p1.refresh_from_db()
         s1 = ProductSerializer(p1)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['price'], payload['price'])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['price'], payload['price'])
 
     def test_product_delete_by_admin(self):
         """Test deleting a product."""
@@ -238,9 +238,9 @@ class PrivateProductAPITests(TestCase):
 
         url = detail_url_for_product_admin(p1.id)
 
-        res = self.client.delete(url)
+        response = self.client.delete(url)
 
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_create_product_by_invalid_category_id(self):
         """Test creating a product with invalid category id raise error."""
@@ -254,9 +254,9 @@ class PrivateProductAPITests(TestCase):
             'description': 'Intel core i5 4th gen, 8gb Ram.',
         }
 
-        res = self.client.post(
+        response = self.client.post(
             PRODUCT_CREATE_URL, payload, format='json')
-        # print(res.status_code)
+        # print(response.status_code)
         products = Product.objects.all()
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(products.count(), 0)
