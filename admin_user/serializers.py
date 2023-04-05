@@ -57,10 +57,25 @@ class DiscountSerializer(serializers.Serializer):
     name = serializers.CharField()
     percentage = serializers.IntegerField()
 
+    def _apply_discount_on_product(self, category):
+        """When discount is added then apply to the product price."""
+        products = Product.objects.filter(category=category)
+        for product in products:
+            product.calculate_discount()
+            product.save()
+
+    # def validate_category_id(self, value):
+    #     """Validate category id."""
+    #     try:
+    #         Category.objects.get(id=value)
+    #         return value
+    #     except:
+    #         raise Http404
+
     def create(self, validated_data):
         category_id = validated_data['category_id']
         try:
-            Category.objects.get(id=category_id)
+            category = Category.objects.get(id=category_id)
         except:
             raise Http404
         discount = Discount.objects.create(
@@ -68,6 +83,7 @@ class DiscountSerializer(serializers.Serializer):
             name=validated_data['name'],
             percentage=validated_data['percentage']
         )
+        self._apply_discount_on_product(category)
         return discount
 
     def update(self, instance, validated_data):
@@ -78,6 +94,8 @@ class DiscountSerializer(serializers.Serializer):
             'percentage', instance.percentage)
 
         instance.save()
+        self._apply_discount_on_product(instance)
+
         return instance
 
 

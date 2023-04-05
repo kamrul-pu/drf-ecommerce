@@ -99,10 +99,10 @@ class ModelTests(TestCase):
     def test_customer_one_to_one(self):
         """Test an user can have only one customer object."""
         user = create_user()
-        c1 = models.Customer.objects.create(
+        customer = models.Customer.objects.create(
             user=user, name='Kamrul', phone_number='123456789')
 
-        self.assertEqual(str(c1), c1.name)
+        self.assertEqual(str(customer), customer.name)
 
         with self.assertRaises(IntegrityError):
             models.Customer.objects.create(
@@ -177,3 +177,25 @@ class ModelTests(TestCase):
 
         self.assertEqual(product_tag_connector.tag_id, tag.id)
         self.assertEqual(product_tag_connector.product_id, product.id)
+
+    def test_discounted_price_success(self):
+        """Test calculating discounted price success."""
+        category = models.Category.objects.create(
+            name='Electronic',
+        )
+        product = models.Product.objects.create(
+            name='Hp Elitebook 840 G1',
+            price=Decimal('100.00'),
+            category=category,
+            description='Intel core i5 4th gen, 8gb Ram.'
+        )
+
+        discount = models.Discount.objects.create(
+            category=category, name='Eid Discount', percentage=20)
+
+        print('Product before discount',
+              product.discount, product.discounted_price)
+
+        product.calculate_discount()
+        print('Product After discount',
+              product.discount, product.discounted_price)

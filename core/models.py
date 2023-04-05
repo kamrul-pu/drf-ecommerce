@@ -83,6 +83,9 @@ class Product(models.Model):
     description = models.TextField(null=True)
     image = models.ImageField(upload_to='product/', blank=True, null=True)
     stock = models.IntegerField(default=0)
+    discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    discounted_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
     created = models.DateTimeField(auto_now_add=True)
     # tags = models.ManyToManyField(Tag, blank=True)
 
@@ -92,10 +95,13 @@ class Product(models.Model):
     def calculate_discount(self):
         """Calculate discount based on category."""
         try:
-            discount = Discount.objects.get(category=self.category)
-            return self.price * (1 - discount.percentage/100)
+            discount_obj = Discount.objects.get(category=self.category)
+            discount_amount = (self.price * discount_obj.percentage)/100
         except Discount.DoesNotExist:
-            return self.price
+            discount_amount = 0
+
+        self.discount = discount_amount
+        self.discounted_price = self.price-self.discount
 
 
 class ProductTagConnector(models.Model):
@@ -146,6 +152,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
     date_added = models.DateTimeField(auto_now_add=True)
+    item_price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f'{self.id}'

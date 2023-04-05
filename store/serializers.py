@@ -165,6 +165,47 @@ class OrderItemSerializer(serializers.Serializer):
     order_id = serializers.IntegerField(read_only=True)
     product_id = serializers.IntegerField(read_only=True)
     quantity = serializers.IntegerField(default=1)
+    # item_price = serializers.SerializerMethodField()
+
+    # def get_item_price(self,obj):
+    #     """Calculate and return item price by quantity."""
+    #     try:
 
     def create(self, validated_data):
         order_item = OrderItem.objects.create()
+
+
+class ProductSerializerTest(serializers.Serializer):
+    """Serializer for product cart Test."""
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField()
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    discount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    discounted_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2)
+
+    # def get_discount(self, obj):
+    #     return (obj.price*10)/100
+
+    # def get_discounted_price(self, obj):
+    #     """Calculate and return discounted price."""
+    #     return obj.price-obj.discount
+
+
+class OrderItemSerializerTest(serializers.Serializer):
+    """Serializer for product item in cart."""
+    product = ProductSerializerTest()
+    quantity = serializers.IntegerField()
+    # item_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    cart_price = serializers.SerializerMethodField()
+
+    def get_cart_price(self, obj):
+        print("-----------------------------------")
+        # print('self', self)
+        # print('obj', obj.price)
+        # print(obj.price)
+        print(obj.product.price, " X ", obj.quantity)
+        if (obj.product.discounted_price < 1):
+            return obj.product.price * obj.quantity
+        return obj.product.discounted_price * obj.quantity
+        print("-----------------------------------")
