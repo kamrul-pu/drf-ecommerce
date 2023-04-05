@@ -8,6 +8,12 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework import authentication
 from rest_framework import status
+from django.core.paginator import (
+    Paginator,
+    EmptyPage,
+    Page,
+    PageNotAnInteger
+)
 
 from core.models import (
     Category,
@@ -44,9 +50,29 @@ class ProductList(APIView):
 
     def get(self, request):
         products = Product.objects.all().order_by('-id')
-        serializer = ProductSerializer(products, many=True)
 
-        return Response(serializer.data)
+        """Adding Pagination."""
+        page = request.query_params.get('page')
+        paginator = Paginator(products, 5)
+
+        try:
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
+
+        if page is None:
+            page = 1
+        page = int(page)
+
+        serializer = self.serializer_class(products, many=True)
+
+        return Response({
+            'products': serializer.data,
+            'page': page,
+            'pages': paginator.num_pages
+        }, status=status.HTTP_200_OK)
 
 
 class ProductListByCategory(APIView):

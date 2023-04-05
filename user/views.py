@@ -33,7 +33,7 @@ class CreateTokenView(ObtainAuthToken):
 class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the authenticated users."""
     serializer_class = UserSerializer
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
@@ -44,7 +44,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 class CustomerProfile(APIView):
     """View For Customer."""
 
-    authentication_classes = [authentication.TokenAuthentication]
+    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     serializer_class = CustomerSerializer
