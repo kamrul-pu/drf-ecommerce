@@ -64,14 +64,6 @@ class DiscountSerializer(serializers.Serializer):
             product.calculate_discount()
             product.save()
 
-    # def validate_category_id(self, value):
-    #     """Validate category id."""
-    #     try:
-    #         Category.objects.get(id=value)
-    #         return value
-    #     except:
-    #         raise Http404
-
     def create(self, validated_data):
         category_id = validated_data['category_id']
         try:
@@ -94,7 +86,7 @@ class DiscountSerializer(serializers.Serializer):
             'percentage', instance.percentage)
 
         instance.save()
-        self._apply_discount_on_product(instance)
+        self._apply_discount_on_product(instance.category)
 
         return instance
 
@@ -164,3 +156,14 @@ class TagProductConnectorSerializer(serializers.Serializer):
         )
 
         return product_tag_connect
+
+
+"""
+    def validate_category_id(self, value):
+        "Validate category id."
+        try:
+            Category.objects.get(id=value)
+            return value
+        except:
+            raise Http404
+"""

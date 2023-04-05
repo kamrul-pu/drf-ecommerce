@@ -110,12 +110,13 @@ class PrivateDiscountAPITest(TestCase):
         response = self.client.post(DISCOUNT_URL, payload)
         discount = response.data
         payload = {
+            'category_id': category.id,
             'name': 'Eid Ul Fitre Discount',
             'percentage': 30,
         }
 
         url = get_detail_url(discount['id'])
-        response = self.client.patch(url, payload, format='json')
+        response = self.client.patch(url, payload)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], payload['name'])

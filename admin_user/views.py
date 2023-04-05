@@ -290,14 +290,14 @@ class DiscountDetail(APIView):
 
     def get(self, request, pk, format=None):
         discount = self._get_object(pk)
-        serializer = DiscountSerializer(discount)
+        serializer = self.serializer_class(discount)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, pk, format=None):
         discount = self._get_object(pk)
-        serializer = DiscountSerializer(discount,
-                                        data=request.data, context={'request': request}, partial=True)
+        serializer = self.serializer_class(discount,
+                                           data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
