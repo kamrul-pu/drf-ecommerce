@@ -19,7 +19,8 @@ class ProductSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     description = serializers.CharField(required=False)
-    image = serializers.ImageField(required=False)
+    image = serializers.ImageField(
+        required=False)
 
     def validate_category_id(self, value):
         try:

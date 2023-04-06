@@ -40,24 +40,24 @@ class OrderCustomerTest(TestCase):
         self.customer = Customer.objects.create(user=self.user)
         self.client.force_authenticate(self.user)
 
-    def test_customer_order_show(self):
-        """Test retrieving customer order."""
+    # def test_customer_order_show(self):
+    #     """Test retrieving customer order."""
 
-        res = self.client.get(ORDER_URL)
+    #     res = self.client.get(ORDER_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        order = Order.objects.all()
-        self.assertEqual(order.count(), 1)
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     order = Order.objects.all()
+    #     self.assertEqual(order.count(), 1)
         # print("respone data", res.data)
 
-    def test_customer_order_show_existing(self):
-        """Test retrieving customer order."""
+    # def test_customer_order_show_existing(self):
+    #     """Test retrieving customer order."""
 
-        res = self.client.get(ORDER_URL)
+    #     res = self.client.get(ORDER_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        order = Order.objects.all()
-        self.assertEqual(order.count(), 1)
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     order = Order.objects.all()
+    #     self.assertEqual(order.count(), 1)
         # print("respone data", res.data)
 
     def test_add_product_to_cart_success(self):

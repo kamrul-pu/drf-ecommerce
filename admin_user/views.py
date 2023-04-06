@@ -329,7 +329,10 @@ class AdminOrderList(APIView):
 
     def get(self, request, format=None):
         # orders = Order.objects.filter().prefetch_related("orderitem_set")
-        orders = Order.objects.filter()
+        orders = Order.objects.filter(complete=True)
+        for order in orders:
+            order.get_cart_total()
+
         serializer = self.serializer_class(orders, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -352,29 +355,30 @@ class AdminOrderDetail(APIView):
 
     def get(self, request, pk, format=None):
         order = Order.objects.get(pk=pk)
-        # order_items = OrderItem.objects.filter(order=order)
-        # serializer = OrderItemSerializerAdmin(order_items, many=True)
+        order.get_cart_total()
+
         serializer = self.serializer_class(order)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, pk, format=None):
         order = self._get_object(pk)
-        serializer = OrderSerializerAdmin(order,
-                                          data=request.data, context={'request': request}, partial=True)
+        order.get_cart_total()
+        serializer = self.serializer_class(order,
+                                           data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, pk, format=None):
-        order = self._get_object(pk)
-        serializer = OrderSerializerAdmin(order,
-                                          data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def put(self, request, pk, format=None):
+    #     order = self._get_object(pk)
+    #     serializer = OrderSerializerAdmin(order,
+    #                                       data=request.data, context={'request': request})
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         order = self._get_object(pk)

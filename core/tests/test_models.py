@@ -193,9 +193,4 @@ class ModelTests(TestCase):
         discount = models.Discount.objects.create(
             category=category, name='Eid Discount', percentage=20)
 
-        print('Product before discount',
-              product.discount, product.discounted_price)
-
         product.calculate_discount()
-        print('Product After discount',
-              product.discount, product.discounted_price)

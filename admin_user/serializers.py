@@ -120,8 +120,8 @@ class OrderSerializerAdmin(serializers.Serializer):
             'cart_total', instance.cart_total)
         instance.paid_amount = validated_data.get(
             'paid_amount', instance.paid_amount)
-        instance.order_items = validated_data.get(
-            'order_items', instance.order_items)
+        # instance.order_items = validated_data.get(
+        #     'order_items', instance.order_items)
 
         instance.save()
 
@@ -182,6 +182,23 @@ class OrderSerializer(serializers.Serializer):
     customer = serializers.CharField()
     date_ordered = serializers.DateTimeField()
     complete = serializers.BooleanField()
+    order_status = serializers.CharField()
     cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
     paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     order_items = OrderItemSerializer(many=True)
+
+    def update(self, instance, validated_data):
+        instance.complete = validated_data.get('complete', instance.complete)
+        instance.cart_total = validated_data.get(
+            'cart_total', instance.cart_total)
+        instance.paid_amount = validated_data.get(
+            'paid_amount', instance.paid_amount)
+        instance.order_status = validated_data.get(
+            'order_status', instance.order_status
+        )
+        # instance.order_items = validated_data.get(
+        #     'order_items', instance.order_items)
+
+        instance.save()
+
+        return instance

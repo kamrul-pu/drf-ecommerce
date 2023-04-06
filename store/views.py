@@ -114,12 +114,20 @@ class CustomerOrder(APIView):
 
     def get(self, request, format=None):
         customer = request.user.customer
-        order, created = Order.objects.get_or_create(
-            customer=customer, complete=False)
-        order.get_cart_total()
+        # order, created = Order.objects.get_or_create(
+        #     customer=customer, complete=False)
+        try:
+            # order = Order.objects.get(customer=customer, complete=True)
+            orders = Order.objects.filter(customer=customer)
+            for order in orders:
+                order.get_cart_total()
+            # order.get_cart_total()
 
-        serializer = self.serializer_class(order)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            # serializer = self.serializer_class(order)
+            serializer = self.serializer_class(orders, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({'order': 'No Found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class UpdateCart(APIView):
@@ -159,10 +167,9 @@ class CustomerCart(APIView):
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False)
         total = order.get_cart_total()
-        # total = 0
         order_items = OrderItem.objects.filter(order=order)
         serializer = self.serializer_class(order_items, many=True)
-        # return Response(serializer.data, status=status.HTTP_200_OK)
+
         return Response({
             'cart_items': serializer.data,
             'total': total,
