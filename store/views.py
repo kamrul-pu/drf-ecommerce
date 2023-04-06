@@ -122,7 +122,7 @@ class CustomerOrder(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class AddToCart(APIView):
+class UpdateCart(APIView):
     """Add or remove item from the cart."""
 
     serializer_class = OrderItemSerializer
@@ -167,3 +167,19 @@ class CustomerCart(APIView):
             'cart_items': serializer.data,
             'total': total,
         }, status=status.HTTP_200_OK)
+
+
+class PlaceOrder(APIView):
+    """Place and Complete an incomplete Order."""
+
+    def post(self, request, format=None):
+        amount = request.data['amount']
+        customer = Customer.objects.get(user=request.user)
+        order, created = Order.objects.get_or_create(
+            customer=customer, complete=False)
+        order.paid_amount = amount
+        order.complete = True
+        order.order_status = 'Confirmed'
+        order.save()
+
+        return Response({'msg': 'Order Placed Successfully.'}, status=status.HTTP_201_CREATED)

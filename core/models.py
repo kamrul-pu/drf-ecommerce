@@ -135,6 +135,7 @@ class Order(models.Model):
 
     choice = (
         ('Pending', 'Pending'),
+        ('Confirmed', 'Confirmed'),
         ('Shipped', 'Shipped'),
         ('Delivered', 'Delivered')
     )
