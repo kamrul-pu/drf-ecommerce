@@ -38,7 +38,7 @@ class CategoryList(APIView):
     serializer_class = CategorySerializer
 
     def get(self, request):
-        categories = Category.objects.all().order_by('-id')
+        categories = Category.objects.filter().order_by('-id')
         serializer = self.serializer_class(categories, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -116,33 +116,23 @@ class CustomerOrder(APIView):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False)
+        order.get_cart_total()
 
         serializer = self.serializer_class(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class CustomerCart(APIView):
-    """Customer Shopping Cart"""
-    permission_classes = [IsAuthenticated]
-
-    serializer_class = OrderSerializer
 
 
 class AddToCart(APIView):
     """Add or remove item from the cart."""
 
     serializer_class = OrderItemSerializer
-    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk, action, format=None):
         product = Product.objects.get(pk=pk)
-        # customer = self.request.user.customer
         customer, created = Customer.objects.get_or_create(user=request.user)
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False)
-
-        # print("Order", order, "Created", created)
 
         order_item, created = OrderItem.objects.get_or_create(
             order_id=order.id, product_id=product.id)
@@ -153,7 +143,6 @@ class AddToCart(APIView):
             order_item.quantity = (order_item.quantity-1)
 
         order_item.save()
-        # serializer = OrderItemSerializer(order_item)
 
         if order_item.quantity <= 0:
             order_item.delete()

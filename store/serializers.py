@@ -10,43 +10,6 @@ from core.models import (
 )
 
 
-# class ProductSerializer(serializers.ModelSerializer):
-#     """Serializers for Product."""
-#     class Meta:
-#         model = Product
-#         fields = ['id', 'name', 'price', 'category', 'image']
-
-
-# class ProductSerializer(serializers.Serializer):
-#     # category = CategorySerializer()
-#     id = serializers.IntegerField(read_only=True)
-#     category_id = serializers.IntegerField()
-#     name = serializers.CharField()
-#     price = serializers.DecimalField(max_digits=10, decimal_places=2)
-#     image = serializers.ImageField(required=False)
-#     description = serializers.TimeField()
-
-#     def create(self, validated_data):
-#         """Create and return Product."""
-#         category_id = validated_data.pop('category_id')
-#         category = Category.objects.get(id=category_id)
-
-#         return Product.objects.create(category=category, **validated_data)
-
-#     def update(self, instance, validated_data):
-#         category_id = validated_data.pop('category_id')
-#         instance.category = Category.objects.get(id=category_id)
-#         instance.name = validated_data.get('name', instance.name)
-#         instance.price = validated_data.get('price', instance.price)
-#         instance.description = validated_data.get(
-#             'description', instance.description)
-#         instance.image = validated_data.get('image', instance.image)
-
-#         instance.save()
-
-#         return instance
-
-
 class ProductSerializer(serializers.Serializer):
     # category = serializers.PrimaryKeyRelatedField(
     #     queryset=Category.objects.all())
@@ -102,13 +65,6 @@ class CategorySerializer(serializers.Serializer):
 
         return instance
 
-# class CategorySerializer(serializers.ModelSerializer):
-#     """Serializer for our Category."""
-
-#     class Meta:
-#         model = Category
-#         fields = ['id', 'name']
-
 
 """
 class ProductSerializer(serializers.Serializer):
@@ -153,6 +109,7 @@ class CategorySerializer(serializers.Serializer):
 class OrderSerializer(serializers.Serializer):
     """Serializer for Order."""
     customer_id = serializers.IntegerField(read_only=True)
+    customer_name = serializers.CharField(source='customer.name')
     id = serializers.IntegerField(read_only=True)
     date_ordered = serializers.DateTimeField()
     complete = serializers.BooleanField()
@@ -201,9 +158,6 @@ class OrderItemSerializerTest(serializers.Serializer):
 
     def get_cart_price(self, obj):
         print("-----------------------------------")
-        # print('self', self)
-        # print('obj', obj.price)
-        # print(obj.price)
         print(obj.product.price, " X ", obj.quantity)
         if (obj.product.discounted_price < 1):
             return obj.product.price * obj.quantity

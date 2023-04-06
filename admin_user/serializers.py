@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.http import Http404
 
 from core.models import (
-    Category, Discount, OrderItem, Tag, Product, ProductTagConnector
+    Category, Discount, OrderItem, Tag, Product, ProductTagConnector, Order
 )
 
 
@@ -168,3 +168,20 @@ class TagProductConnectorSerializer(serializers.Serializer):
         except:
             raise Http404
 """
+
+
+class OrderItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    product = serializers.CharField()
+    quantity = serializers.IntegerField()
+    item_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+
+class OrderSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    customer = serializers.CharField()
+    date_ordered = serializers.DateTimeField()
+    complete = serializers.BooleanField()
+    cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
+    paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    order_items = OrderItemSerializer(many=True)

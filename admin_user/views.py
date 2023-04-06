@@ -39,6 +39,8 @@ from admin_user.serializers import (
     TagSerialiser,
     CategorySerializer,
     DiscountSerializer,
+    OrderItemSerializer,
+    OrderSerializer,
 )
 
 # permission_classes[IsAdminUser]
@@ -320,17 +322,15 @@ class DiscountDetail(APIView):
 
 class AdminOrderList(APIView):
     """View for listing all order."""
-
-    # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
-    serializer_class = OrderSerializerAdmin
+    # serializer_class = OrderSerializerAdmin
+    serializer_class = OrderSerializer
 
     def get(self, request, format=None):
         # orders = Order.objects.filter().prefetch_related("orderitem_set")
         orders = Order.objects.filter()
-        # print("Orders", orders.orderitem)
-        serializer = OrderSerializerAdmin(orders, many=True)
+        serializer = self.serializer_class(orders, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -341,7 +341,8 @@ class AdminOrderDetail(APIView):
     # authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [IsAdminUser]
 
-    serializer_class = OrderSerializerAdmin
+    # serializer_class = OrderSerializerAdmin
+    serializer_class = OrderSerializer
 
     def _get_object(self, pk):
         try:
@@ -351,8 +352,9 @@ class AdminOrderDetail(APIView):
 
     def get(self, request, pk, format=None):
         order = Order.objects.get(pk=pk)
-        order_items = OrderItem.objects.filter(order=order)
-        serializer = OrderItemSerializerAdmin(order_items, many=True)
+        # order_items = OrderItem.objects.filter(order=order)
+        # serializer = OrderItemSerializerAdmin(order_items, many=True)
+        serializer = self.serializer_class(order)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
