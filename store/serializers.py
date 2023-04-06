@@ -21,6 +21,14 @@ class ProductSerializer(serializers.Serializer):
     description = serializers.CharField(required=False)
     image = serializers.ImageField(required=False)
 
+    def validate_category_id(self, value):
+        try:
+            Category.objects.get(id=value)
+        except:
+            raise Http404
+
+        return value
+
     def create(self, validated_data):
         category_id = validated_data['category_id']
         try:
@@ -106,17 +114,6 @@ class CategorySerializer(serializers.Serializer):
 """
 
 
-class OrderSerializer(serializers.Serializer):
-    """Serializer for Order."""
-    customer_id = serializers.IntegerField(read_only=True)
-    customer_name = serializers.CharField(source='customer.name')
-    id = serializers.IntegerField(read_only=True)
-    date_ordered = serializers.DateTimeField()
-    complete = serializers.BooleanField()
-    cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
-    paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
-
-
 class OrderItemSerializer(serializers.Serializer):
     """Serializer for Order."""
     order_id = serializers.IntegerField(read_only=True)
@@ -132,34 +129,34 @@ class OrderItemSerializer(serializers.Serializer):
         order_item = OrderItem.objects.create()
 
 
-class ProductSerializerTest(serializers.Serializer):
-    """Serializer for product cart Test."""
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField()
-    price = serializers.DecimalField(max_digits=10, decimal_places=2)
-    discount = serializers.DecimalField(max_digits=10, decimal_places=2)
-    discounted_price = serializers.DecimalField(
-        max_digits=10, decimal_places=2)
-
-    # def get_discount(self, obj):
-    #     return (obj.price*10)/100
-
-    # def get_discounted_price(self, obj):
-    #     """Calculate and return discounted price."""
-    #     return obj.price-obj.discount
-
-
-class OrderItemSerializerTest(serializers.Serializer):
+class CustomerCartSerializer(serializers.Serializer):
     """Serializer for product item in cart."""
-    product = ProductSerializerTest()
+    product_name = serializers.CharField(source='product.name')
+    product_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, source='product.price')
+    discount = serializers.DecimalField(
+        max_digits=10, decimal_places=2, source='product.discount')
+    discounted_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, source='product.discounted_price')
+    # product_image = serializers.ImageField(source='product.image')
     quantity = serializers.IntegerField()
-    # item_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+
     cart_price = serializers.SerializerMethodField()
 
     def get_cart_price(self, obj):
-        print("-----------------------------------")
-        print(obj.product.price, " X ", obj.quantity)
-        if (obj.product.discounted_price < 1):
+        if obj.product.discounted_price < 1:
             return obj.product.price * obj.quantity
         return obj.product.discounted_price * obj.quantity
-        print("-----------------------------------")
+
+
+class OrderSerializer(serializers.Serializer):
+    """Serializer for Order."""
+    # customer_id = serializers.IntegerField(read_only=True)
+    customer_name = serializers.CharField(source='customer.name')
+    id = serializers.IntegerField(read_only=True)
+    date_ordered = serializers.DateTimeField()
+    order_status = serializers.CharField()
+    complete = serializers.BooleanField()
+    cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
+    paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    order_items = CustomerCartSerializer(many=True)

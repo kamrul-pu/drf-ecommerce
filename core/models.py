@@ -133,10 +133,18 @@ class Order(models.Model):
     paid_amount = models.DecimalField(
         max_digits=10, decimal_places=2, default=0.0)
 
+    choice = (
+        ('Pending', 'Pending'),
+        ('Shipped', 'Shipped'),
+        ('Delivered', 'Delivered')
+    )
+
+    order_status = models.CharField(
+        choices=choice, default='Pending', max_length=20)
+
     def __str__(self):
         return f"{self.id}"
 
-    # @property
     def get_cart_total(self):
         """Calculate total order price"""
         # orderitems = self.orderitem_set.all()

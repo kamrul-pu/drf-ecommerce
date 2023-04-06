@@ -28,7 +28,7 @@ from .serializers import (
     ProductSerializer,
     OrderSerializer,
     OrderItemSerializer,
-    OrderItemSerializerTest,
+    CustomerCartSerializer,
 )
 
 
@@ -146,13 +146,13 @@ class AddToCart(APIView):
 
         if order_item.quantity <= 0:
             order_item.delete()
-        return Response({'msg': 'Add to cart Success'}, status=status.HTTP_201_CREATED)
+        return Response({'msg': 'Cart Updated.'}, status=status.HTTP_201_CREATED)
 
 
-class CartItem(APIView):
+class CustomerCart(APIView):
     """Sample CartItem View."""
 
-    serializer_class = OrderItemSerializerTest
+    serializer_class = CustomerCartSerializer
 
     def get(self, request, format=None):
         customer = Customer.objects.get(user=request.user)
