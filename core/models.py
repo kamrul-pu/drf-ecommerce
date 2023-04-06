@@ -57,7 +57,7 @@ class Category(models.Model):
 
 class Discount(models.Model):
     """Models for Discount."""
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.OneToOneField(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     percentage = models.IntegerField()
 

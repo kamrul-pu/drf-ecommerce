@@ -32,10 +32,10 @@ class ProductSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         category_id = validated_data['category_id']
-        try:
-            Category.objects.get(id=category_id)
-        except:
-            raise Http404
+        # try:
+        #     Category.objects.get(id=category_id)
+        # except:
+        #     raise Http404
         product = Product.objects.create(
             category_id=validated_data['category_id'],
             name=validated_data['name'],
