@@ -6,7 +6,9 @@ from django.http import Http404
 from core.models import (
     Category,
     Product,
-    Order, OrderItem
+    Order,
+    OrderItem,
+    ProductTagConnector,
 )
 
 
@@ -21,6 +23,16 @@ class ProductSerializer(serializers.Serializer):
     description = serializers.CharField(required=False)
     image = serializers.ImageField(
         required=False)
+
+    tags = serializers.SerializerMethodField()
+
+    def get_tags(self, obj):
+        """"""
+        tags = []
+        product_tags = ProductTagConnector.objects.filter(product=obj)
+        for product_tag in product_tags:
+            tags.append(product_tag.tag.title)
+        return tags
 
     def validate_category_id(self, value):
         try:
