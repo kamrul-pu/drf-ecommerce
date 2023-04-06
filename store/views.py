@@ -121,6 +121,13 @@ class CustomerOrder(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class CustomerCart(APIView):
+    """Customer Shopping Cart"""
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = OrderSerializer
+
+
 class AddToCart(APIView):
     """Add or remove item from the cart."""
 
@@ -159,6 +166,15 @@ class CartItem(APIView):
     serializer_class = OrderItemSerializerTest
 
     def get(self, request, format=None):
-        order_items = OrderItem.objects.filter()
+        customer = Customer.objects.get(user=request.user)
+        order, created = Order.objects.get_or_create(
+            customer=customer, complete=False)
+        total = order.get_cart_total()
+        # total = 0
+        order_items = OrderItem.objects.filter(order=order)
         serializer = self.serializer_class(order_items, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            'cart_items': serializer.data,
+            'total': total,
+        }, status=status.HTTP_200_OK)

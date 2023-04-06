@@ -140,15 +140,16 @@ class Order(models.Model):
     def get_cart_total(self):
         """Calculate total order price"""
         orderitems = self.orderitem_set.all()
-        total = sum([item.get_total for item in orderitems])
+        total = sum([item.get_total() for item in orderitems])
         self.cart_total = total
         return total
 
 
 class OrderItem(models.Model):
     """Model for storing order Items."""
-    order = models.ForeignKey(
-        Order, on_delete=models.CASCADE, related_name='order_items')
+    # order = models.ForeignKey(
+    #     Order, on_delete=models.CASCADE, related_name='order_items')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -160,4 +161,6 @@ class OrderItem(models.Model):
 
     def get_total(self):
         """Calculate and return total price."""
-        return self.product.price * self.quantity
+        if self.product.discounted_price < 1:
+            return self.product.price * self.quantity
+        return self.product.discounted_price * self.quantity

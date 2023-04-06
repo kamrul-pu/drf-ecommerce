@@ -111,6 +111,7 @@ class OrderSerializerAdmin(serializers.Serializer):
     cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
     paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     order_items = OrderItemSerializerAdmin(many=True)
+    # order_items = serializers.ListField(OrderItemSerializerAdmin)
     # order_item = OrderItemSerializerAdmin(many=True)
 
     def update(self, instance, validated_data):
