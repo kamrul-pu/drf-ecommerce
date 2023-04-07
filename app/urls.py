@@ -13,7 +13,7 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('admin_user/', include('admin_user.urls')),
+    path('admin-user/', include('admin_user.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
     path(
         'api/docs/',

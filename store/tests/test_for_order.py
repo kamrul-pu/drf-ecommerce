@@ -18,6 +18,7 @@ from core.models import (
 
 
 ORDER_URL = reverse('store:order')
+SHIPPING_URL = reverse('store:shipping_address')
 
 
 def order_update(product_id, action='add'):
@@ -79,3 +80,50 @@ class OrderCustomerTest(TestCase):
         url = order_update(product.id)
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_shipping_address_success(self):
+        """Test Creating Shipping address Success."""
+        payload = {
+            'address': 'Lalmatia Dhaka',
+            'city': 'Dhaka',
+            'postal_code': '1230'
+        }
+
+        response = self.client.post(SHIPPING_URL, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['city'], payload['city'])
+
+    def test_update_shipping_address_success(self):
+        """Test Updateing Shipping Address Update."""
+        payload = {
+            'address': 'Lalmatia Dhaka',
+            'city': 'Dhaka',
+            'postal_code': '1230'
+        }
+
+        shipping_address = self.client.post(
+            SHIPPING_URL, payload, format='json')
+        payload = {
+            'address': 'Tejgaon Industrial Area',
+            'postal_code': '1208'
+        }
+        response = self.client.patch(SHIPPING_URL, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(payload['address'], response.data['address'])
+
+    def test_get_customer_shipping_address(self):
+        """Test Retrieve Customer Shipping Address."""
+        payload = {
+            'address': 'Lalmatia Dhaka',
+            'city': 'Dhaka',
+            'postal_code': '1230'
+        }
+
+        shipping_address = self.client.post(
+            SHIPPING_URL, payload, format='json')
+
+        response = self.client.get(SHIPPING_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data, shipping_address.data)

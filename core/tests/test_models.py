@@ -194,3 +194,26 @@ class ModelTests(TestCase):
             category=category, name='Eid Discount', percentage=20)
 
         product.calculate_discount()
+
+    def test_create_shipping_address_success(self):
+        """Test creating shipping address success"""
+        user = create_user()
+        customer, created = models.Customer.objects.get_or_create(
+            user=user, phone_number='01778849808')
+
+        # order = models.Order.objects.get_or_create(
+        #     customer=customer, complete=False)
+        order, created = models.Order.objects.get_or_create(
+            customer=customer,
+            complete=False,
+        )
+
+        shipping_address = models.ShippingAddress.objects.create(
+            order=order,
+            customer=customer,
+            address='Lalmatia Dhaka',
+            city='Dhaka',
+            postal_code='1230',
+        )
+
+        self.assertEqual(str(shipping_address), shipping_address.address)

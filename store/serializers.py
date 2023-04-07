@@ -9,6 +9,7 @@ from core.models import (
     Order,
     OrderItem,
     ProductTagConnector,
+    ShippingAddress,
 )
 
 
@@ -173,3 +174,33 @@ class OrderSerializer(serializers.Serializer):
     cart_total = serializers.DecimalField(max_digits=10, decimal_places=2)
     paid_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     order_items = CustomerCartSerializer(many=True)
+
+
+class ShippingAddressSerializer(serializers.Serializer):
+    """Serializer for Shipping Address."""
+    customer = serializers.CharField(source='customer.name', read_only=True)
+    address = serializers.CharField(style={"base_template": "textarea.html"})
+    city = serializers.CharField()
+    postal_code = serializers.CharField()
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(
+            customer=customer, complete=False)
+        shipping_address = ShippingAddress.objects.create(
+            customer=customer,
+            order=order,
+            **validated_data
+        )
+
+        return shipping_address
+
+    def update(self, instance, validated_data):
+        instance.address = validated_data.get('address', instance.address)
+        instance.city = validated_data.get('city', instance.city)
+        instance.postal_code = validated_data.get(
+            'postal_code', instance.postal_code)
+
+        instance.save()
+        return instance

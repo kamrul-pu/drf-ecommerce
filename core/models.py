@@ -120,12 +120,13 @@ class Customer(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 class Order(models.Model):
     """Our Order Model."""
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
     cart_total = models.DecimalField(
@@ -174,3 +175,15 @@ class OrderItem(models.Model):
         if self.product.discounted_price < 1:
             return self.product.price * self.quantity
         return self.product.discounted_price * self.quantity
+
+
+class ShippingAddress(models.Model):
+    """Sipping Address for a customer."""
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    address = models.TextField()
+    city = models.CharField(max_length=50, null=True, blank=True)
+    postal_code = models.CharField(max_length=10, blank=True)
+
+    def __str__(self):
+        return f'{self.address}'

@@ -21,6 +21,7 @@ from core.models import (
     Order,
     OrderItem,
     Customer,
+    ShippingAddress,
 )
 
 from .serializers import (
@@ -29,6 +30,7 @@ from .serializers import (
     OrderSerializer,
     OrderItemSerializer,
     CustomerCartSerializer,
+    ShippingAddressSerializer,
 )
 
 
@@ -190,3 +192,59 @@ class PlaceOrder(APIView):
         order.save()
 
         return Response({'msg': 'Order Placed Successfully.'}, status=status.HTTP_201_CREATED)
+
+
+class ShippingAddressDetail(APIView):
+    """Shipping Address Get Create Update."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = ShippingAddressSerializer
+
+    def _get_object(self, request):
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(
+            customer=customer, complete=False)
+
+        shipping_address, created = ShippingAddress.objects.get_or_create(
+            customer=customer,
+            order=order,
+        )
+        return shipping_address
+
+    def get(self, request, format=None):
+        shipping_address = self._get_object(request)
+        serializer = self.serializer_class(shipping_address)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(
+            data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, format=None):
+        shipping_address = self._get_object(request)
+        serializer = self.serializer_class(
+            shipping_address, data=request.data,
+            context={'request': request}, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, format=None):
+        shipping_address = self._get_object(request)
+        serializer = self.serializer_class(
+            shipping_address, data=request.data,
+            context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
