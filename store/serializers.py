@@ -30,9 +30,11 @@ class ProductSerializer(serializers.Serializer):
     def get_tags(self, obj):
         """"""
         tags = []
-        product_tags = ProductTagConnector.objects.filter(product=obj)
+        product_tags = ProductTagConnector.objects.select_related('tag').filter(
+            product=obj)
         for product_tag in product_tags:
-            tags.append(product_tag.tag.title)
+            tags.append({'id': product_tag.tag.id,
+                        'title': product_tag.tag.title})
         return tags
 
     def validate_category_id(self, value):
@@ -188,13 +190,14 @@ class ShippingAddressSerializer(serializers.Serializer):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False)
-        shipping_address = ShippingAddress.objects.create(
-            customer=customer,
-            order=order,
-            **validated_data
-        )
+        # shipping_address = ShippingAddress.objects.create(
+        #     customer=customer,
+        #     order=order,
+        #     **validated_data
+        # )
 
-        return shipping_address
+        # return shipping_address
+        return ShippingAddress(customer=customer, order=order, **validated_data)
 
     def update(self, instance, validated_data):
         instance.address = validated_data.get('address', instance.address)
