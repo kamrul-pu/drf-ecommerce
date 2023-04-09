@@ -52,7 +52,9 @@ class ProductList(APIView):
     serializer_class = ProductSerializer
 
     def get(self, request):
-        products = Product.objects.all().order_by('-id')
+        # products = Product.objects.all().order_by('-id')
+        products = Product.objects.prefetch_related(
+            'producttagconnector_set__tag').filter()
 
         """Adding Pagination."""
         page = request.query_params.get('page')

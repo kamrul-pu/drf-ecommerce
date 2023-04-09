@@ -13,6 +13,12 @@ from core.models import (
 )
 
 
+class TagSerializer(serializers.Serializer):
+    """Serializer for tag."""
+    id = serializers.IntegerField(source='tag.id')
+    title = serializers.CharField(source='tag.title')
+
+
 class ProductSerializer(serializers.Serializer):
     # category = serializers.PrimaryKeyRelatedField(
     #     queryset=Category.objects.all())
@@ -24,24 +30,24 @@ class ProductSerializer(serializers.Serializer):
     description = serializers.CharField(required=False)
     image = serializers.ImageField(
         required=False)
+    tags = TagSerializer(many=True, source='producttagconnector_set')
+    # tags = TagSerializer(source='producttagconnector_set__tag', many=True)
 
-    tags = serializers.SerializerMethodField()
+    # tags = serializers.SerializerMethodField()
 
-    def get_tags(self, obj):
-        """"""
-        tags = []
-        product_tags = ProductTagConnector.objects.select_related('tag').filter(
-            product=obj)
-        for product_tag in product_tags:
-            tags.append({'id': product_tag.tag.id,
-                        'title': product_tag.tag.title})
-        return tags
+    # def get_tags(self, obj):
+    #     print("Instance Attributes", dir(obj))
+    #     """"""
+    #     tags = [{'id': ptc.tag.id, 'title': ptc.tag.title}
+    #             for ptc in obj.producttagconnector_set.all()]
+    #     print(tags)
+    #     return tags
 
     def validate_category_id(self, value):
         try:
             Category.objects.get(id=value)
         except:
-            raise Http404
+            raise serializers.ValidationError('Invalid Category')
 
         return value
 
