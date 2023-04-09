@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'user',
     'store',
     'debug_toolbar',
+    'versatileimagefield',
 ]
 
 MIDDLEWARE = [
@@ -196,4 +197,42 @@ SIMPLE_JWT = {
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
+}
+
+
+VERSATILEIMAGEFIELD_SETTINGS = {
+    'cache_length': 2592000,
+
+    'cache_name': 'versatileimagefield_cache',
+
+    'jpeg_resize_quality': 70,
+
+    'sized_directory_name': '__sized__',
+
+    'filtered_directory_name': '__filtered__',
+
+    'placeholder_directory_name': '__placeholder__',
+
+    'create_images_on_demand': True,
+
+    'image_key_post_processor': None,
+
+    'progressive_jpeg': False
+}
+
+VERSATILEIMAGEFIELD_RENDITION_KEY_SETS = {
+    'image_gallery': [
+        ('gallery_large', 'crop__800x450'),
+        ('gallery_square_small', 'crop__50x50')
+    ],
+    'primary_image_detail': [
+        ('hero', 'crop__600x283'),
+        ('social', 'thumbnail__800x800')
+    ],
+    'primary_image_list': [
+        ('list', 'crop__400x225'),
+    ],
+    'headshot': [
+        ('headshot_small', 'crop__150x175'),
+    ]
 }
